@@ -36,6 +36,7 @@ xla::XlaOp StatelessRngUniform(absl::string_view device_type_string,
 // converted to "maxval" which is out of range ["minval", "maxval"). In
 // addition, the distribution near the limit is not uniform.
 xla::XlaOp MaybeConvertF32ToBF16(xla::XlaOp input, DataType dtype);
+xla::XlaOp MaybeConvertF32ToCustom(xla::XlaOp input, DataType dtype);
 
 }  // namespace tensorflow
 

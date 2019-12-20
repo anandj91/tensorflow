@@ -410,6 +410,7 @@ Status LiteralBase::Piece::CopyFrom(const LiteralBase::Piece& src) {
       COPY_ELEMENTS(S64, int64);
       COPY_ELEMENTS(F16, half);
       COPY_ELEMENTS(BF16, bfloat16);
+      COPY_ELEMENTS(CUSTOM, custom);
       COPY_ELEMENTS(F32, float);
       COPY_ELEMENTS(F64, double);
       COPY_ELEMENTS(C64, complex64);
@@ -541,6 +542,9 @@ Status MutableLiteralBase::CopySliceFrom(const LiteralSlice& src_literal,
                                          copy_size);
     case BF16:
       return CopySliceFromInternal<bfloat16>(src_literal, src_base, dest_base,
+                                             copy_size);
+    case CUSTOM:
+      return CopySliceFromInternal<custom>(src_literal, src_base, dest_base,
                                              copy_size);
     case F32:
       return CopySliceFromInternal<float>(src_literal, src_base, dest_base,
@@ -766,6 +770,8 @@ Literal LiteralBase::Slice(absl::Span<const int64> start_indices,
       return SliceInternal<half>(result_shape, start_indices);
     case BF16:
       return SliceInternal<bfloat16>(result_shape, start_indices);
+    case CUSTOM:
+      return SliceInternal<custom>(result_shape, start_indices);
     case F32:
       return SliceInternal<float>(result_shape, start_indices);
     case F64:
@@ -816,6 +822,9 @@ string LiteralBase::GetAsString(absl::Span<const int64> multi_index,
     case BF16:
       return StrCat(
           static_cast<float>(Get<bfloat16>(multi_index, shape_index)));
+    case CUSTOM:
+      return StrCat(
+          static_cast<float>(Get<custom>(multi_index, shape_index)));
     case F64:
       return StrCat(Get<double>(multi_index, shape_index));
     case C64: {
@@ -872,6 +881,9 @@ string LiteralBase::GetSparseElementAsString(
     case BF16:
       return StrCat(static_cast<float>(
           GetSparseElement<bfloat16>(sparse_element_number, shape_index)));
+    case CUSTOM:
+      return StrCat(static_cast<float>(
+          GetSparseElement<custom>(sparse_element_number, shape_index)));
     case F64:
       return StrCat(
           GetSparseElement<double>(sparse_element_number, shape_index));
@@ -925,6 +937,8 @@ StatusOr<double> LiteralBase::GetAsDouble(
       return Get<double>(multi_index);
     case BF16:
       return static_cast<double>(Get<bfloat16>(multi_index));
+    case CUSTOM:
+      return static_cast<double>(Get<custom>(multi_index));
     default:
       return FailedPrecondition("Array element type is not floating: %s",
                                 PrimitiveType_Name(shape().element_type()));
@@ -997,6 +1011,9 @@ Status MutableLiteralBase::SetFromDouble(absl::Span<const int64> multi_index,
     case BF16:
       Set<bfloat16>(multi_index, static_cast<bfloat16>(value));
       break;
+    case CUSTOM:
+      Set<custom>(multi_index, static_cast<custom>(value));
+      break;
     default:
       return FailedPrecondition("Array element type is not floating: %s",
                                 PrimitiveType_Name(shape().element_type()));
@@ -1062,6 +1079,9 @@ void LiteralBase::Piece::SortSparseElements() {
       break;
     case BF16:
       SortSparseElementsInternal<bfloat16>();
+      break;
+    case CUSTOM:
+      SortSparseElementsInternal<custom>();
       break;
     default:
       LOG(FATAL) << "Element type not valid for sparse array: "
@@ -1550,6 +1570,8 @@ bool LiteralBase::Piece::EqualElements(const LiteralBase::Piece& other) const {
       return EqualElementsInternal<half>(other, &multi_index);
     case BF16:
       return EqualElementsInternal<bfloat16>(other, &multi_index);
+    case CUSTOM:
+      return EqualElementsInternal<custom>(other, &multi_index);
     case C64:
       return EqualElementsInternal<complex64>(other, &multi_index);
     case C128:
@@ -1641,6 +1663,9 @@ bool LiteralBase::IsAll(int8 value) const {
         case BF16:
           return AllElementsEqualValue<bfloat16>(piece.data<bfloat16>(),
                                                  static_cast<bfloat16>(value));
+        case CUSTOM:
+          return AllElementsEqualValue<custom>(piece.data<custom>(),
+                                                 static_cast<custom>(value));
         case PRED:
           if (value == 0) {
             return AllElementsEqualValue<bool>(piece.data<bool>(), false);
@@ -1680,6 +1705,9 @@ bool LiteralBase::IsAllFloat(float value) const {
           case BF16:
             return AllElementsEqualValue<bfloat16>(
                 piece.data<bfloat16>(), static_cast<bfloat16>(value));
+          case CUSTOM:
+            return AllElementsEqualValue<custom>(
+                piece.data<custom>(), static_cast<custom>(value));
           default:
             return false;
         }
@@ -1730,6 +1758,10 @@ bool LiteralBase::IsAllFirst() const {
             case BF16: {
               auto data = piece.data<bfloat16>();
               return AllElementsEqualValue<bfloat16>(data, data[0]);
+            }
+            case CUSTOM: {
+              auto data = piece.data<custom>();
+              return AllElementsEqualValue<custom>(data, data[0]);
             }
             case F16: {
               auto data = piece.data<half>();
@@ -1825,6 +1857,8 @@ bool LiteralBase::IsR1Iota() const {
         return Get<half>({idx}) == static_cast<half>(idx);
       case BF16:
         return Get<bfloat16>({idx}) == static_cast<bfloat16>(idx);
+      case CUSTOM:
+        return Get<custom>({idx}) == static_cast<custom>(idx);
       case C64:
         return Get<complex64>({idx}) == complex64(idx, 0.0f);
       case C128:
@@ -1878,6 +1912,8 @@ bool LiteralBase::IsZero(absl::Span<const int64> indices) const {
       return Get<half>(indices) == static_cast<half>(0.0f);
     case BF16:
       return Get<bfloat16>(indices) == static_cast<bfloat16>(0.0f);
+    case CUSTOM:
+      return Get<custom>(indices) == static_cast<custom>(0.0f);
     case PRED:
       return Get<bool>(indices) == false;
     default:
@@ -1947,6 +1983,13 @@ void LiteralBase::Piece::WriteToProto(LiteralProto* proto) const {
           reinterpret_cast<const char*>(data<bfloat16>().data()), size_bytes());
       if (!kLittleEndian) {
         ConvertEndianShort(proto->mutable_bf16s());
+      }
+      break;
+    case CUSTOM:
+      *proto->mutable_customs() = string(
+          reinterpret_cast<const char*>(data<custom>().data()), size_bytes());
+      if (!kLittleEndian) {
+        ConvertEndianShort(proto->mutable_customs());
       }
       break;
     case F32:
@@ -2082,6 +2125,14 @@ Status LiteralBase::Piece::CopyFromProto(const LiteralProto& proto) {
     case BF16: {
       const string& s(proto.bf16s());
       TF_RET_CHECK(data<bfloat16>().size() * sizeof(bfloat16) == s.size());
+      memcpy(untyped_data(), s.data(), s.size());
+      if (!kLittleEndian) {
+        ConvertEndianShort(reinterpret_cast<char*>(untyped_data()), s.size());
+      }
+    } break;
+    case CUSTOM: {
+      const string& s(proto.customs());
+      TF_RET_CHECK(data<custom>().size() * sizeof(custom) == s.size());
       memcpy(untyped_data(), s.data(), s.size());
       if (!kLittleEndian) {
         ConvertEndianShort(reinterpret_cast<char*>(untyped_data()), s.size());

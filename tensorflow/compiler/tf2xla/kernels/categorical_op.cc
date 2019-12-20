@@ -184,7 +184,7 @@ class StatelessCategoricalOp : public CategoricalOp {
 
 REGISTER_XLA_OP(Name("StatelessMultinomial")
                     .CompileTimeConstantInput("num_samples")
-                    .TypeConstraint("T", {DT_FLOAT, DT_BFLOAT16})
+                    .TypeConstraint("T", {DT_FLOAT, DT_BFLOAT16, DT_CUSTOM})
                     .TypeConstraint("Tseed", DT_INT32),
                 StatelessCategoricalOp);
 

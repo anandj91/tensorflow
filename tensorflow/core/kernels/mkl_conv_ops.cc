@@ -519,7 +519,8 @@ class MklConvOp : public OpKernel {
       bool emit_filter_output = (typeid(Tinput) == typeid(Tfilter) &&
                                  typeid(Tinput) == typeid(Toutput) &&
                                  (typeid(Tinput) == typeid(float) ||
-                                  typeid(Tinput) == typeid(bfloat16)));
+                                  typeid(Tinput) == typeid(bfloat16) || 
+                                  typeid(Tinput) == typeid(custom)));
       if (dst_tf_shape.num_elements() == 0 || dst_dims_tf_order[0] == 0) {
         MklDnnShape dst_mkl_shape;
         dst_mkl_shape.SetMklTensor(false);
@@ -1859,6 +1860,7 @@ REGISTER_KERNEL_BUILDER(
 
 TF_CALL_float(REGISTER_MKL_CPU_2D);
 TF_CALL_bfloat16(REGISTER_MKL_CPU_2D);
+TF_CALL_custom(REGISTER_MKL_CPU_2D);
 
 #define REGISTER_MKL_CPU_2D_DEPTHWISE(T)        \
   REGISTER_KERNEL_BUILDER(                      \
@@ -1870,6 +1872,7 @@ TF_CALL_bfloat16(REGISTER_MKL_CPU_2D);
 
 TF_CALL_float(REGISTER_MKL_CPU_2D_DEPTHWISE);
 TF_CALL_bfloat16(REGISTER_MKL_CPU_2D_DEPTHWISE);
+TF_CALL_custom(REGISTER_MKL_CPU_2D_DEPTHWISE);
 
 // Note we are registering _MklFusedConv2D.
 // We check the fused_ops attributes to decide if bias is enabled or not.
@@ -1903,6 +1906,7 @@ TF_CALL_bfloat16(REGISTER_MKL_CPU_2D_DEPTHWISE);
 
 TF_CALL_float(REGISTER_MKL_CPU_2D_FUSED);
 TF_CALL_bfloat16(REGISTER_MKL_CPU_2D_FUSED);
+TF_CALL_custom(REGISTER_MKL_CPU_2D_FUSED);
 
 // Register 3D operations
 #define REGISTER_MKL_CPU_3D(T)                  \
@@ -1914,6 +1918,7 @@ TF_CALL_bfloat16(REGISTER_MKL_CPU_2D_FUSED);
       MklConvOp<CPUDevice, T, T, T, T, T, int32, false, false, false>);
 TF_CALL_float(REGISTER_MKL_CPU_3D);
 TF_CALL_bfloat16(REGISTER_MKL_CPU_3D);
+TF_CALL_custom(REGISTER_MKL_CPU_3D);
 
 }  // namespace tensorflow
 #endif  // INTEL_MKL

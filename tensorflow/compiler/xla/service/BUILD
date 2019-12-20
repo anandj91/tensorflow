@@ -245,6 +245,7 @@ cc_library(
         "hlo_evaluator.cc",
         "hlo_evaluator_typed_visitor.h",
         "hlo_evaluator_typed_visitor_bfloat16.cc",
+        "hlo_evaluator_typed_visitor_custom.cc",
         "hlo_evaluator_typed_visitor_bool.cc",
         "hlo_evaluator_typed_visitor_complex128.cc",
         "hlo_evaluator_typed_visitor_complex64.cc",

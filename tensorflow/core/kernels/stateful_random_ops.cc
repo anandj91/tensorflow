@@ -342,6 +342,7 @@ class NonDeterministicIntsOp : public OpKernel {
 
 TF_CALL_half(REGISTER_FloatOps_CPU);
 TF_CALL_bfloat16(REGISTER_FloatOps_CPU);
+TF_CALL_custom(REGISTER_FloatOps_CPU);
 TF_CALL_float(REGISTER_FloatOps_CPU);
 TF_CALL_double(REGISTER_FloatOps_CPU);
 

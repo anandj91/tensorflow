@@ -21,6 +21,7 @@ limitations under the License.
 #define EIGEN_USE_THREADS
 
 #include "tensorflow/core/lib/bfloat16/bfloat16.h"
+#include "tensorflow/core/lib/custom/custom.h"
 
 #ifdef TENSORFLOW_USE_SYCL
 #include "tensorflow/core/kernels/cwise_ops_sycl_common.h"
@@ -570,6 +571,8 @@ struct ApproximateEqual<CPUDevice, T> {
   REGISTER(OP, D, N, F, T0)
 #define REGISTER9(OP, D, N, F, T0, T1, T2, T3, T4, T5, T6, T7, T8) \
   REGISTER(OP, D, N, F, T0)
+#define REGISTER10(OP, D, N, F, T0, T1, T2, T3, T4, T5, T6, T7, T8, T9) \
+  REGISTER(OP, D, N, F, T0)
 #else  // !defined(__ANDROID_TYPES_SLIM__)
 #define REGISTER2(OP, D, N, F, T0, T1) \
   REGISTER(OP, D, N, F, T0)            \
@@ -595,6 +598,9 @@ struct ApproximateEqual<CPUDevice, T> {
 #define REGISTER9(OP, D, N, F, T0, T1, T2, T3, T4, T5, T6, T7, T8) \
   REGISTER5(OP, D, N, F, T0, T1, T2, T3, T4)                       \
   REGISTER4(OP, D, N, F, T5, T6, T7, T8)
+#define REGISTER10(OP, D, N, F, T0, T1, T2, T3, T4, T5, T6, T7, T8, T9) \
+  REGISTER5(OP, D, N, F, T0, T1, T2, T3, T4)                            \
+  REGISTER5(OP, D, N, F, T5, T6, T7, T8, T9)
 
 // Instead of adding REGISTER10, etc., shard the .cc files - see
 // cwise_op_equal_to_*.cc for an example.

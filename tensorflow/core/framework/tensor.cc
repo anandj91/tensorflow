@@ -434,6 +434,16 @@ struct ProtoHelper<bfloat16> {
 };
 
 template <>
+struct ProtoHelper<custom> {
+  static void Fill(const custom* data, size_t n, TensorProto* proto) {
+    proto->mutable_half_val()->Reserve(n);
+    for (size_t i = 0; i < n; ++i) {
+      proto->mutable_half_val()->AddAlreadyReserved(data[i].value);
+    }
+  }
+};
+
+template <>
 struct ProtoHelper<Eigen::half> {
   static void Fill(const Eigen::half* data, size_t n, TensorProto* proto) {
     proto->mutable_half_val()->Reserve(n);
@@ -565,6 +575,30 @@ TensorBuffer* FromProtoField<bfloat16>(Allocator* a, const TensorProto& in,
                                        int64 n) {
   CHECK_GT(n, 0);
   Buffer<bfloat16>* buf = new Buffer<bfloat16>(a, n);
+  uint16* data = buf->template base<uint16>();
+  if (data == nullptr) {
+    buf->Unref();
+    return nullptr;
+  }
+  const int64 in_n = in.half_val().size();
+  auto begin = in.half_val().begin();
+  if (n <= in_n) {
+    std::copy_n(begin, n, data);
+  } else if (in_n > 0) {
+    std::copy_n(begin, in_n, data);
+    const uint16 last = *(data + in_n - 1);
+    std::fill_n(data + in_n, n - in_n, last);
+  } else {
+    std::fill_n(data, n, 0);
+  }
+  return buf;
+}
+
+template <>
+TensorBuffer* FromProtoField<custom>(Allocator* a, const TensorProto& in,
+                                       int64 n) {
+  CHECK_GT(n, 0);
+  Buffer<custom>* buf = new Buffer<custom>(a, n);
   uint16* data = buf->template base<uint16>();
   if (data == nullptr) {
     buf->Unref();
@@ -719,6 +753,7 @@ bool Tensor::RefCountIsOne() const {
     CASE(quint16, SINGLE_ARG(STMTS))                           \
     CASE(qint16, SINGLE_ARG(STMTS))                            \
     CASE(bfloat16, SINGLE_ARG(STMTS))                          \
+    CASE(custom, SINGLE_ARG(STMTS))                            \
     CASE(Eigen::half, SINGLE_ARG(STMTS))                       \
     CASE(ResourceHandle, SINGLE_ARG(STMTS))                    \
     CASE(Variant, SINGLE_ARG(STMTS))                           \

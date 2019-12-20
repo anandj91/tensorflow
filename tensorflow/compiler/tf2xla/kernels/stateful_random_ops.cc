@@ -213,6 +213,7 @@ class StatefulUniformOp : public XlaOpKernel {
       xla::XlaOp uniform = uniform_state.value;
       state = uniform_state.state;
       uniform = MaybeConvertF32ToBF16(uniform, dtype_);
+      uniform = MaybeConvertF32ToCustom(uniform, dtype_);
       return {{uniform, state}};
     };
     OP_REQUIRES_OK(ctx,
@@ -231,7 +232,7 @@ class StatefulUniformOp : public XlaOpKernel {
 REGISTER_XLA_OP(Name("StatefulUniform")
                     .CompileTimeConstantInput("algorithm")
                     .CompileTimeConstantInput("shape")
-                    .TypeConstraint("dtype", {DT_FLOAT, DT_BFLOAT16}),
+                    .TypeConstraint("dtype", {DT_FLOAT, DT_BFLOAT16, DT_CUSTOM}),
                 StatefulUniformOp);
 
 class StatefulStandardNormalOp : public XlaOpKernel {
@@ -251,6 +252,7 @@ class StatefulStandardNormalOp : public XlaOpKernel {
       xla::RngOutput value_state =
           xla::NormalF32Distribution(key, state, BitGen(alg), xla_shape);
       xla::XlaOp normal = MaybeConvertF32ToBF16(value_state.value, dtype_);
+      normal = MaybeConvertF32ToCustom(normal, dtype_);
       return {{normal, value_state.state}};
     };
     OP_REQUIRES_OK(ctx,
@@ -269,7 +271,7 @@ class StatefulStandardNormalOp : public XlaOpKernel {
 REGISTER_XLA_OP(Name("StatefulStandardNormalV2")
                     .CompileTimeConstantInput("algorithm")
                     .CompileTimeConstantInput("shape")
-                    .TypeConstraint("dtype", {DT_FLOAT, DT_BFLOAT16}),
+                    .TypeConstraint("dtype", {DT_FLOAT, DT_BFLOAT16, DT_CUSTOM}),
                 StatefulStandardNormalOp);
 
 class StatefulTruncatedNormalOp : public XlaOpKernel {
@@ -296,6 +298,7 @@ class StatefulTruncatedNormalOp : public XlaOpKernel {
       state = uniform_result.state;
       xla::XlaOp truncated_normal = TruncatedNormal(uniform);
       truncated_normal = MaybeConvertF32ToBF16(truncated_normal, dtype_);
+      truncated_normal = MaybeConvertF32ToCustom(truncated_normal, dtype_);
       return {{truncated_normal, state}};
     };
     OP_REQUIRES_OK(ctx,
@@ -314,7 +317,7 @@ class StatefulTruncatedNormalOp : public XlaOpKernel {
 REGISTER_XLA_OP(Name("StatefulTruncatedNormal")
                     .CompileTimeConstantInput("algorithm")
                     .CompileTimeConstantInput("shape")
-                    .TypeConstraint("dtype", {DT_FLOAT, DT_BFLOAT16}),
+                    .TypeConstraint("dtype", {DT_FLOAT, DT_BFLOAT16, DT_CUSTOM}),
                 StatefulTruncatedNormalOp);
 
 class StatefulUniformIntOp : public XlaOpKernel {

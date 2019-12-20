@@ -307,6 +307,7 @@ class MklInputConversionOp : public OpKernel {
 // TF_CALL_NUMBER_TYPES(REGISTER_CPU);
 TF_CALL_float(REGISTER_CPU);
 TF_CALL_bfloat16(REGISTER_CPU);
+TF_CALL_custom(REGISTER_CPU);
 #undef REGISTER_CPU
 }  // namespace tensorflow
 #endif  // INTEL_MKL

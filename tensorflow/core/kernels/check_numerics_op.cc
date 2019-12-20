@@ -16,6 +16,7 @@ limitations under the License.
 // See docs in ../ops/array_ops.cc.
 
 #include "tensorflow/core/lib/bfloat16/bfloat16.h"
+#include "tensorflow/core/lib/custom/custom.h"
 
 #include <math.h>
 #include <algorithm>
@@ -226,6 +227,7 @@ class CheckNumericsOp<GPUDevice, T> : public AsyncOpKernel {
       CheckNumericsOp<CPUDevice, T>);
 TF_CALL_half(REGISTER_CPU_KERNEL);
 TF_CALL_bfloat16(REGISTER_CPU_KERNEL);
+TF_CALL_custom(REGISTER_CPU_KERNEL);
 TF_CALL_float(REGISTER_CPU_KERNEL);
 TF_CALL_double(REGISTER_CPU_KERNEL);
 

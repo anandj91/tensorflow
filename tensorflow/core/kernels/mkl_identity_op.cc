@@ -61,6 +61,7 @@ class MklIdentityOp : public OpKernel {
 
 TF_CALL_float(REGISTER_MKL_CPU);
 TF_CALL_bfloat16(REGISTER_MKL_CPU);
+TF_CALL_custom(REGISTER_MKL_CPU);
 #undef REGISTER_MKL_CPU
 }  // namespace tensorflow
 #endif  // INTEL_MKL

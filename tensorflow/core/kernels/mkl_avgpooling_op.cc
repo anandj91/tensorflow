@@ -322,6 +322,7 @@ class MklAvgPoolingGradOp : public MklPoolingBackwardOpBase<T> {
 
 TF_CALL_float(REGISTER_MKL_AVGPOOL3D_KERNELS);
 TF_CALL_bfloat16(REGISTER_MKL_AVGPOOL3D_KERNELS);
+TF_CALL_custom(REGISTER_MKL_AVGPOOL3D_KERNELS);
 
 #define REGISTER_MKL_AVGPOOL_KERNELS(T)                             \
   REGISTER_KERNEL_BUILDER(Name("_MklAvgPool")                       \
@@ -337,6 +338,7 @@ TF_CALL_bfloat16(REGISTER_MKL_AVGPOOL3D_KERNELS);
 
 TF_CALL_float(REGISTER_MKL_AVGPOOL_KERNELS);
 TF_CALL_bfloat16(REGISTER_MKL_AVGPOOL_KERNELS);
+TF_CALL_custom(REGISTER_MKL_AVGPOOL_KERNELS);
 
 REGISTER_KERNEL_BUILDER(Name("_MklQuantizedAvgPool")
                             .Device(DEVICE_CPU)

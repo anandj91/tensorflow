@@ -70,6 +70,11 @@ bool CompareEqual<bfloat16>(bfloat16 lhs, bfloat16 rhs,
   return CompareFloatsBitwiseEqual<bfloat16, uint16>(lhs, rhs, multi_index);
 }
 template <>
+bool CompareEqual<custom>(custom lhs, custom rhs,
+                            absl::Span<const int64> multi_index) {
+  return CompareFloatsBitwiseEqual<custom, uint16>(lhs, rhs, multi_index);
+}
+template <>
 bool CompareEqual<Eigen::half>(Eigen::half lhs, Eigen::half rhs,
                                absl::Span<const int64> multi_index) {
   return CompareFloatsBitwiseEqual<Eigen::half, uint16>(lhs, rhs, multi_index);
@@ -125,6 +130,11 @@ template <>
 Status MakeErrorStatus(bfloat16 lhs, bfloat16 rhs,
                        absl::Span<const int64> multi_index) {
   return MakeBitwiseErrorStatus<bfloat16, uint16>(lhs, rhs, multi_index);
+}
+template <>
+Status MakeErrorStatus(custom lhs, custom rhs,
+                       absl::Span<const int64> multi_index) {
+  return MakeBitwiseErrorStatus<custom, uint16>(lhs, rhs, multi_index);
 }
 template <>
 Status MakeErrorStatus(Eigen::half lhs, Eigen::half rhs,
@@ -247,6 +257,11 @@ double FpAbsoluteValue(NativeT value) {
 
 template <>
 double FpAbsoluteValue(bfloat16 value) {
+  return FpAbsoluteValue<float>(static_cast<float>(value));
+}
+
+template <>
+double FpAbsoluteValue(custom value) {
   return FpAbsoluteValue<float>(static_cast<float>(value));
 }
 
@@ -689,6 +704,9 @@ Status EqualHelper(const LiteralSlice& expected, const LiteralSlice& actual) {
     case BF16:
       result = Equal<bfloat16>(expected, actual, index, 0);
       break;
+    case CUSTOM:
+      result = Equal<custom>(expected, actual, index, 0);
+      break;
     case F16:
       result = Equal<half>(expected, actual, index, 0);
       break;
@@ -772,6 +790,10 @@ Status NearHelper(const LiteralSlice& expected, const LiteralSlice& actual,
     switch (expected.shape().element_type()) {
       case BF16:
         return NearComparator<bfloat16>::Compare(
+            expected, actual, error, use_detailed_message, miscompare_callback);
+        break;
+      case CUSTOM:
+        return NearComparator<custom>::Compare(
             expected, actual, error, use_detailed_message, miscompare_callback);
         break;
       case F16:

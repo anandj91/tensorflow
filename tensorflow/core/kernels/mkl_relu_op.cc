@@ -1100,6 +1100,7 @@ class MklLeakyReluGradOp : public MklReluGradOpBase<Device, T, eltwise_relu> {
                           MklReluGradOp<CPUDevice, type>);
 TF_CALL_float(REGISTER_RELU_MKL_SUPPORTED_KERNELS_TYPES);
 TF_CALL_bfloat16(REGISTER_RELU_MKL_SUPPORTED_KERNELS_TYPES);
+TF_CALL_custom(REGISTER_RELU_MKL_SUPPORTED_KERNELS_TYPES);
 
 // register dnn kernels for supported operations and supported types
 #define REGISTER_ELU_MKL_SUPPORTED_KERNELS_TYPES(type)              \
@@ -1115,6 +1116,7 @@ TF_CALL_bfloat16(REGISTER_RELU_MKL_SUPPORTED_KERNELS_TYPES);
                           MklEluGradOp<CPUDevice, type>);
 TF_CALL_float(REGISTER_ELU_MKL_SUPPORTED_KERNELS_TYPES);
 TF_CALL_bfloat16(REGISTER_ELU_MKL_SUPPORTED_KERNELS_TYPES);
+TF_CALL_custom(REGISTER_ELU_MKL_SUPPORTED_KERNELS_TYPES);
 
 #define REGISTER_TANH_MKL_SUPPORTED_KERNELS_TYPES(type)             \
   REGISTER_KERNEL_BUILDER(Name("_MklTanh")                          \
@@ -1129,6 +1131,7 @@ TF_CALL_bfloat16(REGISTER_ELU_MKL_SUPPORTED_KERNELS_TYPES);
                           MklTanhGradOp<CPUDevice, type>);
 TF_CALL_float(REGISTER_TANH_MKL_SUPPORTED_KERNELS_TYPES);
 TF_CALL_bfloat16(REGISTER_TANH_MKL_SUPPORTED_KERNELS_TYPES);
+TF_CALL_custom(REGISTER_TANH_MKL_SUPPORTED_KERNELS_TYPES);
 
 #define REGISTER_RELU6_MKL_SUPPORTED_KERNELS_TYPES(type)            \
   REGISTER_KERNEL_BUILDER(Name("_MklRelu6")                         \
@@ -1143,6 +1146,7 @@ TF_CALL_bfloat16(REGISTER_TANH_MKL_SUPPORTED_KERNELS_TYPES);
                           MklRelu6GradOp<CPUDevice, type>);
 TF_CALL_float(REGISTER_RELU6_MKL_SUPPORTED_KERNELS_TYPES);
 TF_CALL_bfloat16(REGISTER_RELU6_MKL_SUPPORTED_KERNELS_TYPES);
+TF_CALL_custom(REGISTER_RELU6_MKL_SUPPORTED_KERNELS_TYPES);
 
 #define REGISTER_LeakyRelu_MKL_SUPPORTED_KERNELS_TYPES(type)        \
   REGISTER_KERNEL_BUILDER(Name("_MklLeakyRelu")                     \
@@ -1157,6 +1161,7 @@ TF_CALL_bfloat16(REGISTER_RELU6_MKL_SUPPORTED_KERNELS_TYPES);
                           MklLeakyReluGradOp<CPUDevice, type>);
 TF_CALL_float(REGISTER_LeakyRelu_MKL_SUPPORTED_KERNELS_TYPES);
 TF_CALL_bfloat16(REGISTER_LeakyRelu_MKL_SUPPORTED_KERNELS_TYPES);
+TF_CALL_custom(REGISTER_LeakyRelu_MKL_SUPPORTED_KERNELS_TYPES);
 
 }  // namespace tensorflow
 

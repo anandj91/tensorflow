@@ -19,6 +19,7 @@ limitations under the License.
 #define EIGEN_USE_THREADS
 
 #include "tensorflow/core/framework/bfloat16.h"
+#include "tensorflow/core/framework/custom.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/kernels/slice_op.h"
 

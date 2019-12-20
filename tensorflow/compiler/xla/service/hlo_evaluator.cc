@@ -211,6 +211,8 @@ HloEvaluator::HloEvaluator(int64 max_loop_iterations)
   // around the input and the output of the computations.
   typed_visitors_[BF16] =
       absl::make_unique<HloEvaluatorTypedVisitor<bfloat16, float>>(this);
+  typed_visitors_[CUSTOM] =
+      absl::make_unique<HloEvaluatorTypedVisitor<custom, float>>(this);
 
   typed_visitors_[TUPLE] =
       absl::make_unique<FunctionVisitor>([](HloInstruction*) {
@@ -541,6 +543,16 @@ Status HloEvaluator::HandleIsFinite(HloInstruction* is_finite) {
       TF_ASSIGN_OR_RETURN(evaluated_[is_finite], std::move(result_or));
       break;
     }
+    case CUSTOM: {
+      auto result_or = ElementWiseUnaryOpImpl<bool, custom>(
+          is_finite,
+          [](custom elem_operand) {
+            return std::isfinite(static_cast<float>(elem_operand));
+          },
+          GetEvaluatedLiteralFor(operand));
+      TF_ASSIGN_OR_RETURN(evaluated_[is_finite], std::move(result_or));
+      break;
+    }
     case F32: {
       auto result_or = ElementWiseUnaryOpImpl<bool, float>(
           is_finite,
@@ -568,6 +580,13 @@ Status HloEvaluator::HandleReal(HloInstruction* real) {
     case BF16: {
       auto result_or = ElementWiseUnaryOpImpl<bfloat16, bfloat16>(
           real, [](bfloat16 elem_operand) { return elem_operand; },
+          GetEvaluatedLiteralFor(operand));
+      TF_ASSIGN_OR_RETURN(evaluated_[real], std::move(result_or));
+      break;
+    }
+    case CUSTOM: {
+      auto result_or = ElementWiseUnaryOpImpl<custom, custom>(
+          real, [](custom elem_operand) { return elem_operand; },
           GetEvaluatedLiteralFor(operand));
       TF_ASSIGN_OR_RETURN(evaluated_[real], std::move(result_or));
       break;
@@ -741,6 +760,11 @@ Status HloEvaluator::HandleCompare(HloInstruction* compare) {
     case BF16: {
       TF_ASSIGN_OR_RETURN(evaluated_[compare],
                           Compare<bfloat16>(compare->shape(), direction,
+                                            lhs_literal, rhs_literal));
+    } break;
+    case CUSTOM: {
+      TF_ASSIGN_OR_RETURN(evaluated_[compare],
+                          Compare<custom>(compare->shape(), direction,
                                             lhs_literal, rhs_literal));
     } break;
     case F32: {
@@ -2026,6 +2050,10 @@ StatusOr<Literal> ExtractFromIndexPositions(const Literal& from,
     }
     case BF16: {
       return ExtractLiteralFromIndexPositions<bfloat16>(from, indices,
+                                                        extract_as_scalar);
+    }
+    case CUSTOM: {
+      return ExtractLiteralFromIndexPositions<custom>(from, indices,
                                                         extract_as_scalar);
     }
     case F16: {

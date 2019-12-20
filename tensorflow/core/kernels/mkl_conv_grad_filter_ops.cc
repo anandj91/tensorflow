@@ -732,6 +732,7 @@ class MklConvCustomBackpropFilterOp
 
 TF_CALL_float(REGISTER_MKL_FILTER_KERNELS);
 TF_CALL_bfloat16(REGISTER_MKL_FILTER_KERNELS);
+TF_CALL_custom(REGISTER_MKL_FILTER_KERNELS);
 #undef REGISTER_MKL_FILTER_KERNELS
 
 }  // namespace tensorflow

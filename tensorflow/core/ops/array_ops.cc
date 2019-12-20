@@ -755,7 +755,7 @@ REGISTER_OP("OnesLike")
     .Input("x: T")
     .Output("y: T")
     .Attr(
-        "T: {bfloat16, half, float, double, int8, uint8, int16, uint16, int32, "
+        "T: {bfloat16, custom, half, float, double, int8, uint8, int16, uint16, int32, "
         "int64, complex64, complex128, bool}")
     .SetShapeFn(shape_inference::UnchangedShape);
 
@@ -764,7 +764,7 @@ REGISTER_OP("Diag")
     .Input("diagonal: T")
     .Output("output: T")
     .Attr(
-        "T: {bfloat16, half, float, double, int32, int64, complex64, "
+        "T: {bfloat16, custom, half, float, double, int32, int64, complex64, "
         "complex128}")
     .SetShapeFn([](InferenceContext* c) {
       ShapeHandle in = c->input(0);
@@ -781,7 +781,7 @@ REGISTER_OP("DiagPart")
     .Input("input: T")
     .Output("diagonal: T")
     .Attr(
-        "T: {bfloat16, half, float, double, int32, int64, complex64, "
+        "T: {bfloat16, custom, half, float, double, int32, int64, complex64, "
         "complex128}")
     .SetShapeFn([](InferenceContext* c) {
       ShapeHandle in = c->input(0);
@@ -926,7 +926,7 @@ REGISTER_OP("ReverseV2")
     .Output("output: T")
     .Attr("Tidx: {int32, int64} = DT_INT32")
     .Attr(
-        "T: {uint8, int8, uint16, int16, int32, int64, bool, bfloat16, half, "
+        "T: {uint8, int8, uint16, int16, int32, int64, bool, bfloat16, custom, half, "
         "float, double, complex64, complex128, string}")
     .SetShapeFn([](InferenceContext* c) {
       ShapeHandle input = c->input(0);
@@ -1272,7 +1272,7 @@ REGISTER_OP("PreventGradient")
 REGISTER_OP("CheckNumerics")
     .Input("tensor: T")
     .Output("output: T")
-    .Attr("T: {bfloat16, half, float, double}")
+    .Attr("T: {bfloat16, custom, half, float, double}")
     .Attr("message: string")
     .SetShapeFn(shape_inference::UnchangedShape);
 
@@ -2621,11 +2621,11 @@ REGISTER_OP("Bitcast")
     // All supported dtypes are listed here to include qint16, quint16, uint32,
     // and uint64.
     .Attr(
-        "T: {bfloat16, half, float, double, int64, int32, uint8, uint16, "
+        "T: {bfloat16, custom, half, float, double, int64, int32, uint8, uint16, "
         "uint32, uint64, int8, int16, complex64, complex128, qint8, quint8, "
         "qint16, quint16, qint32}")
     .Attr(
-        "type: {bfloat16, half, float, double, int64, int32, uint8, uint16, "
+        "type: {bfloat16, custom, half, float, double, int64, int32, uint8, uint16, "
         "uint32, uint64, int8, int16, complex64, complex128, qint8, quint8, "
         "qint16, quint16, qint32}")
     .SetShapeFn([](InferenceContext* c) {
@@ -2723,7 +2723,7 @@ REGISTER_OP("QuantizeAndDequantize")
     .Attr("input_min: float = 0")
     .Attr("input_max: float = 0")
     .Output("output: T")
-    .Attr("T: {bfloat16, half, float, double}")
+    .Attr("T: {bfloat16, custom, half, float, double}")
     .SetShapeFn(shape_inference::UnchangedShape)
     .Deprecated(22, "Replaced by QuantizeAndDequantizeV2");
 
@@ -2736,7 +2736,7 @@ REGISTER_OP("QuantizeAndDequantizeV2")
     .Attr("num_bits: int = 8")
     .Attr("range_given: bool = false")
     .Output("output: T")
-    .Attr("T: {bfloat16, half, float, double}")
+    .Attr("T: {bfloat16, custom, half, float, double}")
     .Attr(
         "round_mode: {'HALF_TO_EVEN', 'HALF_UP'} = "
         "'HALF_TO_EVEN'")
@@ -2756,7 +2756,7 @@ REGISTER_OP("QuantizeAndDequantizeV3")
     .Attr("signed_input: bool = true")
     .Attr("range_given: bool = true")
     .Output("output: T")
-    .Attr("T: {bfloat16, half, float, double}")
+    .Attr("T: {bfloat16, custom, half, float, double}")
     .SetShapeFn([](InferenceContext* c) {
       ShapeHandle unused;
       TF_RETURN_IF_ERROR(c->WithRank(c->input(1), 0, &unused));

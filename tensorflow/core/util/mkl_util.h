@@ -1466,6 +1466,12 @@ memory::data_type MklDnnType<bfloat16>() {
   // Currently, falling back to f32 to get compilation working.
   return memory::data_type::f32;
 }
+template <>
+memory::data_type MklDnnType<custom>() {
+  // TODO(nhasabni): Enable MKL-DNN custom type later.
+  // Currently, falling back to f32 to get compilation working.
+  return memory::data_type::f32;
+}
 
 /// Map TensorFlow's data format into MKL-DNN 3D data format
 /// @input: TensorFlow data format

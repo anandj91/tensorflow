@@ -261,6 +261,16 @@ class LiteralUtil {
   // recursively converts its elements.
   static Literal ConvertF32ToBF16(const LiteralSlice& f32_literal);
 
+  // If the given literal's data type is custom, converts it to a float
+  // literal; otherwise, returns a copy of it. If the literal is a tuple,
+  // recursively converts its elements.
+  static Literal ConvertCustomToF32(const LiteralSlice& custom_literal);
+
+  // If the given literal's data type is float, converts it to a custom
+  // literal; otherwise, returns a copy of it. If the literal is a tuple,
+  // recursively converts its elements.
+  static Literal ConvertF32ToCustom(const LiteralSlice& f32_literal);
+
   // Creates a literal with a new shape with the given new dimensions using the
   // data in the given input literal. For reshaping purposes the (flat) data
   // buffer of the input literal is assumed to have the given minor_to_major

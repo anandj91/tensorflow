@@ -25,6 +25,7 @@ limitations under the License.
 // clang-format on
 
 #include "tensorflow/core/lib/bfloat16/bfloat16.h"
+#include "tensorflow/core/lib/custom/custom.h"
 #include "tensorflow/core/platform/types.h"
 
 namespace tensorflow {
@@ -55,7 +56,16 @@ static inline tensorflow::bfloat16 FloatToBFloat16(float float_val) {
         &(reinterpret_cast<uint16_t*>(&float_val)[1]));
 #endif
 }
-    
+static inline tensorflow::custom FloatToCustom(float float_val) {
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+    return *reinterpret_cast<tensorflow::custom*>(
+        reinterpret_cast<uint16_t*>(&float_val));
+#else
+    return *reinterpret_cast<tensorflow::custom*>(
+        &(reinterpret_cast<uint16_t*>(&float_val)[1]));
+#endif
+}
+
 namespace Eigen {
 // TODO(xpan): We probably need to overwrite more methods to have correct eigen
 // behavior. E.g. epsilon(), dummy_precision, etc. See NumTraits.h in eigen.
@@ -84,6 +94,31 @@ struct NumTraits<tensorflow::bfloat16>
   }
 };
 
+template <>
+struct NumTraits<tensorflow::custom>
+    : GenericNumTraits<tensorflow::custom> {
+  enum {
+    IsInteger = 0,
+    IsSigned = 1,
+    RequireInitialization = 0
+  };
+  static EIGEN_STRONG_INLINE tensorflow::custom highest() {
+    return FloatToCustom(NumTraits<float>::highest());
+  }
+
+  static EIGEN_STRONG_INLINE tensorflow::custom lowest() {
+    return FloatToCustom(NumTraits<float>::lowest());
+  }
+
+  static EIGEN_STRONG_INLINE tensorflow::custom infinity() {
+    return FloatToCustom(NumTraits<float>::infinity());
+  }
+
+  static EIGEN_STRONG_INLINE tensorflow::custom quiet_NaN() {
+    return FloatToCustom(NumTraits<float>::quiet_NaN());
+  }
+};
+
 
 using ::tensorflow::operator==;
 using ::tensorflow::operator!=;
@@ -106,6 +141,24 @@ template <>
 EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE tensorflow::bfloat16 abs(
     const tensorflow::bfloat16& x) {
   return static_cast<tensorflow::bfloat16>(::fabsf(static_cast<float>(x)));
+}
+
+template <>
+EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE tensorflow::custom log(
+    const tensorflow::custom& x) {
+  return static_cast<tensorflow::custom>(::logf(static_cast<float>(x)));
+}
+
+template <>
+EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE tensorflow::custom exp(
+    const tensorflow::custom& x) {
+  return static_cast<tensorflow::custom>(::expf(static_cast<float>(x)));
+}
+
+template <>
+EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE tensorflow::custom abs(
+    const tensorflow::custom& x) {
+  return static_cast<tensorflow::custom>(::fabsf(static_cast<float>(x)));
 }
 
 }  // namespace numext

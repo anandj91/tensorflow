@@ -93,6 +93,8 @@ bool IsAllFpConstantPowerOf2(const HloInstruction* op) {
     switch (c->shape().element_type()) {
       case BF16:
         return static_cast<double>(c->literal().GetFirstElement<bfloat16>());
+      case CUSTOM:
+        return static_cast<double>(c->literal().GetFirstElement<custom>());
       case F16:
         return static_cast<double>(c->literal().GetFirstElement<Eigen::half>());
       case F32:
@@ -1098,6 +1100,9 @@ Status AlgebraicSimplifierVisitor::HandleDivide(HloInstruction* divide) {
         break;
       case BF16:
         TF_RETURN_IF_ERROR(InvertConstant<bfloat16>(*c, &new_literal));
+        break;
+      case CUSTOM:
+        TF_RETURN_IF_ERROR(InvertConstant<custom>(*c, &new_literal));
         break;
       case F64:
         TF_RETURN_IF_ERROR(InvertConstant<double>(*c, &new_literal));

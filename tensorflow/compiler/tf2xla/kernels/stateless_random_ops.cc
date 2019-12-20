@@ -63,6 +63,18 @@ xla::XlaOp MaybeConvertF32ToBF16(xla::XlaOp input, DataType dtype) {
   }
 }
 
+xla::XlaOp MaybeConvertF32ToCustom(xla::XlaOp input, DataType dtype) {
+  if (dtype == DT_CUSTOM) {
+    xla::XlaBuilder* builder = input.builder();
+    xla::XlaOp output = xla::BitcastConvertType(input, xla::U32) &
+                        xla::ConstantR0<uint32>(builder, 0xFFFF0000);
+    return xla::ConvertElementType(xla::BitcastConvertType(output, xla::F32),
+                                   xla::CUSTOM);
+  } else {
+    return input;
+  }
+}
+
 xla::XlaOp StatelessRngUniform(absl::string_view device_type_string,
                                xla::XlaOp seeds, const xla::Shape& shape,
                                xla::XlaOp minval, xla::XlaOp maxval) {
@@ -127,6 +139,7 @@ class StatelessRandomUniformOp : public XlaOpKernel {
                             xla::ConstantR0<float>(builder, 0.0),
                             xla::ConstantR0<float>(builder, 1.0));
     uniform = MaybeConvertF32ToBF16(uniform, dtype_);
+    uniform = MaybeConvertF32ToCustom(uniform, dtype_);
     ctx->SetOutput(0, uniform);
   }
 
@@ -140,7 +153,7 @@ class StatelessRandomUniformOp : public XlaOpKernel {
 // TODO(phawkins): generalize to non-float, non-int32 seed types.
 REGISTER_XLA_OP(Name("StatelessRandomUniform")
                     .CompileTimeConstantInput("shape")
-                    .TypeConstraint("dtype", {DT_FLOAT, DT_BFLOAT16})
+                    .TypeConstraint("dtype", {DT_FLOAT, DT_BFLOAT16, DT_CUSTOM})
                     .TypeConstraint("Tseed", DT_INT32),
                 StatelessRandomUniformOp);
 
@@ -228,6 +241,7 @@ class StatelessRandomNormalOp : public XlaOpKernel {
             xla_shape)
             .value;
     normal = MaybeConvertF32ToBF16(normal, dtype_);
+    normal = MaybeConvertF32ToCustom(normal, dtype_);
     ctx->SetOutput(0, normal);
   }
 
@@ -241,7 +255,7 @@ class StatelessRandomNormalOp : public XlaOpKernel {
 // TODO(phawkins): generalize to non-float, non-int32 seed types.
 REGISTER_XLA_OP(Name("StatelessRandomNormal")
                     .CompileTimeConstantInput("shape")
-                    .TypeConstraint("dtype", {DT_FLOAT, DT_BFLOAT16})
+                    .TypeConstraint("dtype", {DT_FLOAT, DT_BFLOAT16, DT_CUSTOM})
                     .TypeConstraint("Tseed", DT_INT32),
                 StatelessRandomNormalOp);
 
@@ -272,6 +286,7 @@ class StatelessTruncatedNormalOp : public XlaOpKernel {
         xla::One(builder, xla_shape.element_type()));
     xla::XlaOp truncated_normal = TruncatedNormal(uniform);
     truncated_normal = MaybeConvertF32ToBF16(truncated_normal, dtype_);
+    truncated_normal = MaybeConvertF32ToCustom(truncated_normal, dtype_);
     ctx->SetOutput(0, truncated_normal);
   }
 
@@ -284,7 +299,7 @@ class StatelessTruncatedNormalOp : public XlaOpKernel {
 
 REGISTER_XLA_OP(Name("StatelessTruncatedNormal")
                     .CompileTimeConstantInput("shape")
-                    .TypeConstraint("dtype", {DT_FLOAT, DT_BFLOAT16})
+                    .TypeConstraint("dtype", {DT_FLOAT, DT_BFLOAT16, DT_CUSTOM})
                     .TypeConstraint("Tseed", DT_INT32),
                 StatelessTruncatedNormalOp);
 

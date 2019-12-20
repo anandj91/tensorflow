@@ -55,6 +55,7 @@ inline void SYCLmemcpy(Eigen::SyclDevice const& device,
     case DT_INT16:
     case DT_UINT16:
     case DT_BFLOAT16:
+    case DT_CUSTOM:
     case DT_QINT16:
     case DT_QUINT16:
     case DT_HALF:

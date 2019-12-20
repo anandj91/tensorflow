@@ -307,6 +307,7 @@ ShapeUtil::MakeShapeWithDescendingLayoutAndSamePhysicalLayout(
     case S64:
     case F16:
     case BF16:
+    case CUSTOM:
     case F32:
     case F64:
       return true;
@@ -555,6 +556,8 @@ ShapeUtil::MakeShapeWithDescendingLayoutAndSamePhysicalLayout(
     case U64:
       return sizeof(uint64);
     case BF16:
+      return sizeof(float) / 2;
+    case CUSTOM:
       return sizeof(float) / 2;
     case F16:
       return sizeof(float) / 2;

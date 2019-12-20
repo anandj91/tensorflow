@@ -18,6 +18,7 @@ limitations under the License.
 
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/framework/bfloat16.h"
+#include "tensorflow/core/framework/custom.h"
 #include "tensorflow/core/framework/op_kernel.h"
 #include "tensorflow/core/framework/tensor_types.h"
 #include "tensorflow/core/framework/types.h"
@@ -73,6 +74,7 @@ limitations under the License.
   SPECIALIZE_CAST(devname, Eigen::half, std::complex<double>)         \
   SPECIALIZE_CAST(devname, Eigen::half, std::complex<float>)          \
   SPECIALIZE_CAST(devname, bfloat16, float)                           \
+  SPECIALIZE_CAST(devname, custom, float)                             \
   template <typename OUT_TYPE, typename IN_OUT>                       \
   struct CastFunctor<devname, OUT_TYPE, IN_OUT> {                     \
     void operator()(const devname& d,                                 \
@@ -132,6 +134,12 @@ constexpr int MantissaWidth<Eigen::half>() {
 
 template <>
 constexpr int MantissaWidth<bfloat16>() {
+  // Remember, there's 1 hidden bit
+  return 7 + 1;
+}
+
+template <>
+constexpr int MantissaWidth<custom>() {
   // Remember, there's 1 hidden bit
   return 7 + 1;
 }
@@ -300,6 +308,28 @@ struct scalar_cast_op<::tensorflow::bfloat16, float> {
   }
 };
 
+// Specialized cast op impls for custom.
+template <>
+struct scalar_cast_op<::tensorflow::custom, float> {
+  EIGEN_EMPTY_STRUCT_CTOR(scalar_cast_op)
+  typedef float result_type;
+  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE float operator()(
+      const ::tensorflow::custom& a) const {
+    float ret;
+    uint16_t* p = reinterpret_cast<uint16_t*>(&ret);
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+    p[0] = a.value;
+    p[1] = 0;
+#else
+    static_assert(::tensorflow::port::kLittleEndian,
+                  "Not a little endian system!");
+    p[0] = 0;
+    p[1] = a.value;
+#endif
+    return ret;
+  }
+};
+
 template <>
 struct functor_traits<scalar_cast_op<::tensorflow::bfloat16, float>> {
   enum { Cost = NumTraits<float>::AddCost, PacketAccess = false };
@@ -317,6 +347,26 @@ struct scalar_cast_op<float, ::tensorflow::bfloat16> {
 
 template <>
 struct functor_traits<scalar_cast_op<float, ::tensorflow::bfloat16>> {
+  enum { Cost = NumTraits<float>::AddCost, PacketAccess = false };
+};
+
+template <>
+struct functor_traits<scalar_cast_op<::tensorflow::custom, float>> {
+  enum { Cost = NumTraits<float>::AddCost, PacketAccess = false };
+};
+
+template <>
+struct scalar_cast_op<float, ::tensorflow::custom> {
+  EIGEN_EMPTY_STRUCT_CTOR(scalar_cast_op)
+  typedef ::tensorflow::custom result_type;
+  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE const ::tensorflow::custom operator()(
+      const float a) const {
+    return ::tensorflow::custom(a);
+  }
+};
+
+template <>
+struct functor_traits<scalar_cast_op<float, ::tensorflow::custom>> {
   enum { Cost = NumTraits<float>::AddCost, PacketAccess = false };
 };
 

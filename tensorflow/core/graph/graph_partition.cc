@@ -219,7 +219,7 @@ NodeDef* AddSend(const PartitionOptions& opts, const GraphInfo& g_info,
     }
     cast_builder.Attr("DstT", cast_dtype);
 
-    if (cast_dtype == DT_BFLOAT16) {
+    if (cast_dtype == DT_BFLOAT16 || cast_dtype == DT_CUSTOM) {
       // the below attribute specifies that the cast to bfloat16 should use
       // truncation. This is needed to retain legacy behavior when we change
       // the default bfloat16 casts to use rounding instead of truncation

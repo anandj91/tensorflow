@@ -22,6 +22,7 @@ limitations under the License.
 #include "tensorflow/core/lib/gtl/inlined_vector.h"
 #include "tensorflow/core/platform/types.h"
 #include "tensorflow/python/lib/core/bfloat16.h"
+#include "tensorflow/python/lib/core/custom.h"
 #include "tensorflow/python/lib/core/ndarray_tensor_bridge.h"
 
 namespace tensorflow {
@@ -167,6 +168,9 @@ Status PyArray_TYPE_to_TF_DataType(PyArrayObject* array,
     default:
       if (pyarray_type == Bfloat16NumpyType()) {
         *out_tf_datatype = TF_BFLOAT16;
+        break;
+      } else if (pyarray_type == CustomNumpyType()) {
+        *out_tf_datatype = TF_CUSTOM;
         break;
       }
       return errors::Internal("Unsupported numpy type: ",

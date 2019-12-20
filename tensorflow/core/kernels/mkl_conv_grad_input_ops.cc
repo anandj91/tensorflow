@@ -575,6 +575,7 @@ class MklConvCustomBackpropInputOp
                           MklConvCustomBackpropInputOp<CPUDevice, T, true>);
 TF_CALL_float(REGISTER_MKL_CPU_KERNELS);
 TF_CALL_bfloat16(REGISTER_MKL_CPU_KERNELS);
+TF_CALL_custom(REGISTER_MKL_CPU_KERNELS);
 #undef REGISTER_MKL_CPU_KERNELS
 
 }  // namespace tensorflow

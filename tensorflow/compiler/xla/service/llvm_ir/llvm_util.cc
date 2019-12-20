@@ -146,6 +146,7 @@ llvm::Type* PrimitiveTypeToIrType(PrimitiveType element_type,
     case S16:
     case U16:
     case BF16:
+    case CUSTOM:
       // For BF16 we just need some type that is 16 bits wide so that it will
       // take up the right amount of space in memory. LLVM does not have a BF16
       // type (the LLVM half type is IEEE 16 bit floating point, not bfloat), so

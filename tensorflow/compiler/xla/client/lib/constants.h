@@ -50,6 +50,8 @@ XlaOp ConstantR0WithType(XlaBuilder* builder, PrimitiveType type, T value) {
       return ConstantR0<half>(builder, static_cast<half>(value));
     case BF16:
       return ConstantR0<bfloat16>(builder, static_cast<bfloat16>(value));
+    case CUSTOM:
+      return ConstantR0<custom>(builder, static_cast<custom>(value));
     case F32:
       return ConstantR0<float>(builder, static_cast<float>(value));
     case F64:

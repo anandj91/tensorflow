@@ -230,6 +230,13 @@ bool GetCublasAutotuneComputationType(const DataType& dtype,
         *compute_type = ComputationType::kF16;
       }
       return false;
+    case DT_CUSTOM:
+      if (use_f32_for_f16_computation) {
+        *compute_type = ComputationType::kF32;
+      } else {
+        *compute_type = ComputationType::kF16;
+      }
+      return false;
     case DT_FLOAT:
       *compute_type = ComputationType::kF32;
       return true;
@@ -515,6 +522,27 @@ class MatMulOp : public OpKernel {
           &out_float);
       FloatToBFloat16(out_float.flat<float>().data(),
                       out->flat<bfloat16>().data(), out->NumElements());
+    } else if (std::is_same<T, custom>::value) {
+      bool is_cpu = std::is_same<Device, CPUDevice>::value;
+      OP_REQUIRES(ctx, is_cpu,
+                  errors::Internal("custom matmul is not supported by GPU"));
+      Tensor a_float, b_float, out_float;
+      OP_REQUIRES_OK(ctx, ctx->allocate_temp(DT_FLOAT, a.shape(), &a_float));
+      OP_REQUIRES_OK(ctx, ctx->allocate_temp(DT_FLOAT, b.shape(), &b_float));
+      OP_REQUIRES_OK(ctx,
+                     ctx->allocate_temp(DT_FLOAT, out->shape(), &out_float));
+
+      // TODO: Avoid extra copy to make custom matmul efficient on CPU.
+      CustomToFloat(a.flat<custom>().data(), a_float.flat<float>().data(),
+                      a.NumElements());
+      CustomToFloat(b.flat<custom>().data(), b_float.flat<float>().data(),
+                      b.NumElements());
+
+      LaunchMatMul<Device, float, USE_CUBLAS>::launch(
+          ctx, a_float, b_float, dim_pair, &algorithms_, use_autotune_,
+          &out_float);
+      FloatToCustom(out_float.flat<float>().data(),
+                      out->flat<custom>().data(), out->NumElements());
     } else {
       LaunchMatMul<Device, T, USE_CUBLAS>::launch(
           ctx, a, b, dim_pair, &algorithms_, use_autotune_, out);
@@ -590,6 +618,7 @@ struct MatMulFunctor<SYCLDevice, T> {
 // label and NO-LABEL
 TF_CALL_half(REGISTER_CPU);
 TF_CALL_bfloat16(REGISTER_CPU);
+TF_CALL_custom(REGISTER_CPU);
 TF_CALL_int32(REGISTER_CPU);
 TF_CALL_int64(REGISTER_CPU);
 
@@ -618,6 +647,7 @@ TF_CALL_float(REGISTER_CPU);
 TF_CALL_double(REGISTER_CPU);
 TF_CALL_half(REGISTER_CPU);
 TF_CALL_bfloat16(REGISTER_CPU);
+TF_CALL_custom(REGISTER_CPU);
 TF_CALL_int32(REGISTER_CPU);
 TF_CALL_int64(REGISTER_CPU);
 TF_CALL_complex64(REGISTER_CPU);

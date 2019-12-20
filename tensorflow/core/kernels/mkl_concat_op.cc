@@ -673,6 +673,7 @@ class MklConcatOp : public OpKernel {
 
 TF_CALL_float(REGISTER_MKL_CPU);
 TF_CALL_bfloat16(REGISTER_MKL_CPU);
+TF_CALL_custom(REGISTER_MKL_CPU);
 
 REGISTER_KERNEL_BUILDER(Name("_MklQuantizedConcatV2")
                             .Device(DEVICE_CPU)

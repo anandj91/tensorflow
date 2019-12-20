@@ -129,6 +129,7 @@ template class MklPoolingFwdPrimitive<float>;
 template class MklPoolingFwdPrimitive<quint8>;
 template class MklPoolingFwdPrimitive<qint8>;
 template class MklPoolingFwdPrimitive<bfloat16>;
+template class MklPoolingFwdPrimitive<custom>;
 
 template <typename T>
 void MklPoolingBwdPrimitive<T>::Setup(const MklPoolingParams& bwdParams) {
@@ -218,6 +219,7 @@ void MklPoolingBwdPrimitive<T>::Execute(const T* diff_dst_data,
 
 template class MklPoolingBwdPrimitive<float>;
 template class MklPoolingBwdPrimitive<bfloat16>;
+template class MklPoolingBwdPrimitive<custom>;
 
 // Initialization for TensorFlow format
 void MklPoolParameters::Init(OpKernelContext* context,

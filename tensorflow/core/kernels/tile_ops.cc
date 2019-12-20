@@ -115,6 +115,7 @@ extern template struct Tile<GPUDevice, int64, int64>;
 TF_CALL_bool(DECLARE_TYPE);
 TF_CALL_float(DECLARE_TYPE);
 TF_CALL_bfloat16(DECLARE_TYPE);
+TF_CALL_custom(DECLARE_TYPE);
 TF_CALL_double(DECLARE_TYPE);
 TF_CALL_uint8(DECLARE_TYPE);
 TF_CALL_int32(DECLARE_TYPE);
@@ -134,6 +135,7 @@ TF_CALL_int64(DECLARE_TYPE);
 TF_CALL_bool(DECLARE_TYPE);
 TF_CALL_float(DECLARE_TYPE);
 TF_CALL_bfloat16(DECLARE_TYPE);
+TF_CALL_custom(DECLARE_TYPE);
 TF_CALL_double(DECLARE_TYPE);
 TF_CALL_uint8(DECLARE_TYPE);
 TF_CALL_int32(DECLARE_TYPE);
@@ -161,6 +163,7 @@ TF_CALL_string(DECLARE_TYPE);
   DECLARE_DIM(T, 7)
 TF_CALL_float(DECLARE_TYPE);
 TF_CALL_bfloat16(DECLARE_TYPE);
+TF_CALL_custom(DECLARE_TYPE);
 TF_CALL_double(DECLARE_TYPE);
 TF_CALL_int16(DECLARE_TYPE);
 TF_CALL_int32(DECLARE_TYPE);
@@ -233,6 +236,7 @@ class TileOp : public OpKernel {
     // Invoke macro using TF_CALL_* so type-filtering for platform applies.
     TF_CALL_bool(HANDLE_TYPE_NAME);
     TF_CALL_bfloat16(HANDLE_TYPE_NAME);
+    TF_CALL_custom(HANDLE_TYPE_NAME);
     TF_CALL_float(HANDLE_TYPE_NAME);
     TF_CALL_double(HANDLE_TYPE_NAME);
     TF_CALL_uint8(HANDLE_TYPE_NAME);
@@ -313,6 +317,7 @@ inline void TileOp<Device, Tmultiples>::HandleCase(
 TF_CALL_bool(HANDLE_TYPE_NAME_CPU);
 TF_CALL_float(HANDLE_TYPE_NAME_CPU);
 TF_CALL_bfloat16(HANDLE_TYPE_NAME_CPU);
+TF_CALL_custom(HANDLE_TYPE_NAME_CPU);
 TF_CALL_double(HANDLE_TYPE_NAME_CPU);
 TF_CALL_uint8(HANDLE_TYPE_NAME_CPU);
 TF_CALL_int8(HANDLE_TYPE_NAME_CPU);
@@ -426,6 +431,7 @@ class TileGradientOp : public OpKernel {
     TF_CALL_int64(HANDLE_TYPE_NAME);
     TF_CALL_half(HANDLE_TYPE_NAME);
     TF_CALL_bfloat16(HANDLE_TYPE_NAME);
+    TF_CALL_custom(HANDLE_TYPE_NAME);
     TF_CALL_complex64(HANDLE_TYPE_NAME);
     TF_CALL_complex128(HANDLE_TYPE_NAME);
 
