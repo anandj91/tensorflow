@@ -62,6 +62,15 @@ cc_library(
 )
 
 cc_library(
+    name = "custom_support",
+    srcs = ["custom_support.cc"],
+    hdrs = ["custom_support.h"],
+    deps = [
+        ":hlo",
+    ],
+)
+
+cc_library(
     name = "bfloat16_conversion_folding",
     srcs = ["bfloat16_conversion_folding.cc"],
     hdrs = ["bfloat16_conversion_folding.h"],
@@ -245,6 +254,7 @@ cc_library(
         "hlo_evaluator.cc",
         "hlo_evaluator_typed_visitor.h",
         "hlo_evaluator_typed_visitor_bfloat16.cc",
+        "hlo_evaluator_typed_visitor_custom.cc",
         "hlo_evaluator_typed_visitor_bool.cc",
         "hlo_evaluator_typed_visitor_complex128.cc",
         "hlo_evaluator_typed_visitor_complex64.cc",

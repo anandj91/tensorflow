@@ -20,6 +20,7 @@ tensorflow/core/kernels/boosted_trees/stats_ops.cc
 tensorflow/core/kernels/boosted_trees/training_ops.cc
 tensorflow/core/kernels/cast_op.cc
 tensorflow/core/kernels/cast_op_impl_bfloat.cc
+tensorflow/core/kernels/cast_op_impl_custom.cc
 tensorflow/core/kernels/cast_op_impl_bool.cc
 tensorflow/core/kernels/cast_op_impl_complex128.cc
 tensorflow/core/kernels/cast_op_impl_complex64.cc

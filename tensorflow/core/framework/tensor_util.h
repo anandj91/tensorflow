@@ -111,6 +111,7 @@ DEFINE_PROTO_FIELD_HELPER(quint16, int);
 DEFINE_PROTO_FIELD_HELPER(qint32, int);
 DEFINE_PROTO_FIELD_HELPER(Eigen::half, half);
 DEFINE_PROTO_FIELD_HELPER(bfloat16, half);
+DEFINE_PROTO_FIELD_HELPER(custom, uint32);
 DEFINE_PROTO_FIELD_HELPER(complex64, scomplex);
 DEFINE_PROTO_FIELD_HELPER(complex128, dcomplex);
 
@@ -169,6 +170,24 @@ struct CopyHelper<bfloat16> {
   static void FromArray(SrcIter begin, SrcIter end, DstIter dst) {
     std::transform(begin, end, dst, [](bfloat16 bf16) -> int {
       return static_cast<int>(bf16.value);
+    });
+  }
+};
+
+template <>
+struct CopyHelper<custom> {
+  template <typename SrcIter>
+  static void ToArray(SrcIter begin, SrcIter end, custom* dst) {
+    std::transform(begin, end, dst, [](int x) -> custom {
+      custom cust;
+      cust.value = static_cast<uint32>(x);
+      return cust;
+    });
+  }
+  template <typename SrcIter, typename DstIter>
+  static void FromArray(SrcIter begin, SrcIter end, DstIter dst) {
+    std::transform(begin, end, dst, [](custom cust) -> int {
+      return static_cast<int>(cust.value);
     });
   }
 };

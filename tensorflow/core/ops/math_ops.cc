@@ -120,7 +120,7 @@ REGISTER_OP("BatchMatMul")
     .Input("y: T")
     .Output("output: T")
     .Attr(
-        "T: {bfloat16, half, float, double, int32, int64, complex64, "
+        "T: {bfloat16, custom, half, float, double, int32, int64, complex64, "
         "complex128}")
     .Attr("adj_x: bool = false")
     .Attr("adj_y: bool = false")
@@ -163,7 +163,7 @@ REGISTER_OP("BatchMatMulV2")
     .Input("y: T")
     .Output("output: T")
     .Attr(
-        "T: {bfloat16, half, float, double, int32, int64, complex64, "
+        "T: {bfloat16, custom, half, float, double, int32, int64, complex64, "
         "complex128}")
     .Attr("adj_x: bool = false")
     .Attr("adj_y: bool = false")
@@ -202,7 +202,7 @@ _HostCast requires its input and produces its output in host memory.
 REGISTER_OP("Abs")
     .Input("x: T")
     .Output("y: T")
-    .Attr("T: {bfloat16, half, float, double, int32, int64}")
+    .Attr("T: {bfloat16, custom, half, float, double, int32, int64}")
     .SetShapeFn(shape_inference::UnchangedShape);
 
 REGISTER_OP("ComplexAbs")
@@ -217,27 +217,27 @@ REGISTER_OP("ComplexAbs")
   Input("x: T")                                                          \
       .Output("y: T")                                                    \
       .Attr(                                                             \
-          "T: {bfloat16, half, float, double, int32, int64, complex64, " \
+          "T: {bfloat16, custom, half, float, double, int32, int64, complex64, " \
           "complex128}")                                                 \
       .SetShapeFn(shape_inference::UnchangedShape)
 
 #define UNARY_REAL()                              \
   Input("x: T")                                   \
       .Output("y: T")                             \
-      .Attr("T: {bfloat16, half, float, double}") \
+      .Attr("T: {bfloat16, custom, half, float, double}") \
       .SetShapeFn(shape_inference::UnchangedShape)
 
 #define UNARY_COMPLEX()                                                  \
   Input("x: T")                                                          \
       .Output("y: T")                                                    \
-      .Attr("T: {bfloat16, half, float, double, complex64, complex128}") \
+      .Attr("T: {bfloat16, custom, half, float, double, complex64, complex128}") \
       .SetShapeFn(shape_inference::UnchangedShape)
 
 #define UNARY_GRADIENT_COMPLEX()                                         \
   Input("y: T")                                                          \
       .Input("dy: T")                                                    \
       .Output("z: T")                                                    \
-      .Attr("T: {bfloat16, half, float, double, complex64, complex128}") \
+      .Attr("T: {bfloat16, custom, half, float, double, complex64, complex128}") \
       .SetShapeFn(shape_inference::UnchangedShape)
 
 REGISTER_OP("Neg").UNARY();
@@ -330,57 +330,57 @@ expected to create these operators.
 REGISTER_OP("IsNan")
     .Input("x: T")
     .Output("y: bool")
-    .Attr("T: {bfloat16, half, float, double}")
+    .Attr("T: {bfloat16, custom, half, float, double}")
     .SetShapeFn(shape_inference::UnchangedShape);
 
 REGISTER_OP("IsInf")
     .Input("x: T")
     .Output("y: bool")
-    .Attr("T: {bfloat16, half, float, double}")
+    .Attr("T: {bfloat16, custom, half, float, double}")
     .SetShapeFn(shape_inference::UnchangedShape);
 
 REGISTER_OP("IsFinite")
     .Input("x: T")
     .Output("y: bool")
-    .Attr("T: {bfloat16, half, float, double}")
+    .Attr("T: {bfloat16, custom, half, float, double}")
     .SetShapeFn(shape_inference::UnchangedShape);
 
 REGISTER_OP("Sign")
     .Input("x: T")
     .Output("y: T")
     .Attr(
-        "T: {bfloat16, half, float, double, int32, int64, complex64, "
+        "T: {bfloat16, custom, half, float, double, int32, int64, complex64, "
         "complex128}")
     .SetShapeFn(shape_inference::UnchangedShape);
 
 REGISTER_OP("Floor")
     .Input("x: T")
     .Output("y: T")
-    .Attr("T: {bfloat16, half, float, double}")
+    .Attr("T: {bfloat16, custom, half, float, double}")
     .SetShapeFn(shape_inference::UnchangedShape);
 
 REGISTER_OP("Ceil")
     .Input("x: T")
     .Output("y: T")
-    .Attr("T: {bfloat16, half, float, double}")
+    .Attr("T: {bfloat16, custom, half, float, double}")
     .SetShapeFn(shape_inference::UnchangedShape);
 
 REGISTER_OP("Rint")
     .Input("x: T")
     .Output("y: T")
-    .Attr("T: {bfloat16, half, float, double}")
+    .Attr("T: {bfloat16, custom, half, float, double}")
     .SetShapeFn(shape_inference::UnchangedShape);
 
 // Declares cwise binary operations signature: 't, 't -> 't.
 
 #define BINARY_MORE()                                                          \
   Input("x: T").Input("y: T").Output("z: T").Attr(                             \
-      "T: {bfloat16, half, float, double, uint8, int8, uint16, int16, int32, " \
+      "T: {bfloat16, custom, half, float, double, uint8, int8, uint16, int16, int32, " \
       "int64, complex64, complex128}")
 
 #define BINARY_FEWER()                                               \
   Input("x: T").Input("y: T").Output("z: T").Attr(                   \
-      "T: {bfloat16, half, float, double, int32, int64, complex64, " \
+      "T: {bfloat16, custom, half, float, double, int32, int64, complex64, " \
       "complex128}")
 
 REGISTER_OP("Add")
@@ -388,7 +388,7 @@ REGISTER_OP("Add")
     .Input("y: T")
     .Output("z: T")
     .Attr(
-        "T: {bfloat16, half, float, double, uint8, int8, int16, int32, int64, "
+        "T: {bfloat16, custom, half, float, double, uint8, int8, int16, int32, int64, "
         "complex64, complex128, string}")
     .SetShapeFn(shape_inference::BroadcastBinaryOpShapeFn);
 
@@ -399,7 +399,7 @@ REGISTER_OP("AddV2")
     .Input("y: T")
     .Output("z: T")
     .Attr(
-        "T: {bfloat16, half, float, double, uint8, int8, int16, int32, int64, "
+        "T: {bfloat16, custom, half, float, double, uint8, int8, int16, int32, int64, "
         "complex64, complex128}")
     .SetShapeFn(shape_inference::BroadcastBinaryOpShapeFn)
     .SetIsAggregate()
@@ -414,7 +414,7 @@ REGISTER_OP("_MklAdd")
     .Output("mkl_z: uint8")
     .Attr(
         "T: {half, float, double, uint8, int8, int16, int32, int64, complex64, "
-        "complex128, string, bfloat16}")
+        "complex128, string, bfloat16, custom}")
     .SetShapeFn(shape_inference::BroadcastBinaryOpShapeFn)
     .Doc(R"doc(
 Returns `x` + `y` element-wise.
@@ -524,7 +524,7 @@ REGISTER_OP("Maximum")
     .Input("x: T")
     .Input("y: T")
     .Output("z: T")
-    .Attr("T: {bfloat16, half, float, double, int32, int64}")
+    .Attr("T: {bfloat16, custom, half, float, double, int32, int64}")
     .SetShapeFn(shape_inference::BroadcastBinaryOpShapeFn);
 
 // Note: This op is not commutative w.r.t. to all its inputs.
@@ -535,7 +535,7 @@ REGISTER_OP("_MklMaximum")
     .Input("mkl_y: uint8")
     .Output("z: T")
     .Output("mkl_z: uint8")
-    .Attr("T: {half, float, double, int32, int64, bfloat16}")
+    .Attr("T: {half, float, double, int32, int64, bfloat16, custom}")
     .SetShapeFn(shape_inference::BroadcastBinaryOpShapeFn)
     .Doc(R"doc(
 Returns the max of x and y (i.e. x > y ? x : y) element-wise.
@@ -548,28 +548,28 @@ REGISTER_OP("Minimum")
     .Input("x: T")
     .Input("y: T")
     .Output("z: T")
-    .Attr("T: {bfloat16, half, float, double, int32, int64}")
+    .Attr("T: {bfloat16, custom, half, float, double, int32, int64}")
     .SetShapeFn(shape_inference::BroadcastBinaryOpShapeFn);
 
 REGISTER_OP("Mod")
     .Input("x: T")
     .Input("y: T")
     .Output("z: T")
-    .Attr("T: {int32, int64, float16, half, bfloat16, float, double}")
+    .Attr("T: {int32, int64, float16, half, bfloat16, custom, float, double}")
     .SetShapeFn(shape_inference::BroadcastBinaryOpShapeFn);
 
 REGISTER_OP("FloorMod")
     .Input("x: T")
     .Input("y: T")
     .Output("z: T")
-    .Attr("T: {int32, int64, bfloat16, half, float, double}")
+    .Attr("T: {int32, int64, bfloat16, custom, half, float, double}")
     .SetShapeFn(shape_inference::BroadcastBinaryOpShapeFn);
 
 REGISTER_OP("TruncateMod")
     .Input("x: T")
     .Input("y: T")
     .Output("z: T")
-    .Attr("T: {int32, int64, bfloat16, half, float, double}")
+    .Attr("T: {int32, int64, bfloat16, custom, half, float, double}")
     .SetShapeFn(shape_inference::BroadcastBinaryOpShapeFn);
 
 REGISTER_OP("Pow")
@@ -577,7 +577,7 @@ REGISTER_OP("Pow")
     .Input("y: T")
     .Output("z: T")
     .Attr(
-        "T: {bfloat16, float, half, double, int32, int64, complex64, "
+        "T: {bfloat16, custom, float, half, double, int32, int64, complex64, "
         "complex128}")
     .SetShapeFn(shape_inference::BroadcastBinaryOpShapeFn);
 
@@ -620,7 +620,7 @@ REGISTER_OP("Atan2")
     .Input("y: T")
     .Input("x: T")
     .Output("z: T")
-    .Attr("T: {bfloat16, half, float, double}")
+    .Attr("T: {bfloat16, custom, half, float, double}")
     .SetShapeFn(shape_inference::BroadcastBinaryOpShapeFn);
 
 REGISTER_OP("Betainc")
@@ -691,7 +691,7 @@ REGISTER_OP("GreaterEqual").COMPARISON();
       .Output("z: bool")                                                   \
       .SetIsCommutative()                                                  \
       .Attr(                                                               \
-          "T: {bfloat16, half, float, double, uint8, int8, int16, int32, " \
+          "T: {bfloat16, custom, half, float, double, uint8, int8, int16, int32, " \
           "int64, complex64, quint8, qint8, qint32, string, bool, "        \
           "complex128}")                                                   \
       .SetShapeFn(shape_inference::BroadcastBinaryOpShapeFn)
@@ -888,7 +888,7 @@ REGISTER_OP("MatMul")
     .Attr("transpose_a: bool = false")
     .Attr("transpose_b: bool = false")
     .Attr(
-        "T: {bfloat16, half, float, double, int32, int64, complex64, "
+        "T: {bfloat16, custom, half, float, double, int32, int64, complex64, "
         "complex128}")
     .SetShapeFn(shape_inference::MatMulShape);
 
@@ -900,8 +900,8 @@ REGISTER_OP("SparseMatMul")
     .Attr("transpose_b: bool = false")
     .Attr("a_is_sparse: bool = false")
     .Attr("b_is_sparse: bool = false")
-    .Attr("Ta: {float, bfloat16} = DT_FLOAT")
-    .Attr("Tb: {float, bfloat16} = DT_FLOAT")
+    .Attr("Ta: {float, bfloat16, custom} = DT_FLOAT")
+    .Attr("Tb: {float, bfloat16, custom} = DT_FLOAT")
     .SetShapeFn(shape_inference::MatMulShape);
 
 REGISTER_OP("_FusedMatMul")
@@ -1422,7 +1422,7 @@ REGISTER_OP("Range")
     .Input("limit: Tidx")
     .Input("delta: Tidx")
     .Output("output: Tidx")
-    .Attr("Tidx: {bfloat16, float, double, int32, int64} = DT_INT32")
+    .Attr("Tidx: {bfloat16, custom, float, double, int32, int64} = DT_INT32")
     .SetShapeFn([](InferenceContext* c) {
       ShapeHandle unused;
       TF_RETURN_WITH_CONTEXT_IF_ERROR(c->WithRank(c->input(0), 0, &unused),
@@ -1457,7 +1457,7 @@ REGISTER_OP("LinSpace")
     .Input("stop: T")
     .Input("num: Tidx")
     .Output("output: T")
-    .Attr("T: {bfloat16, float, double}")
+    .Attr("T: {bfloat16, custom, float, double}")
     .Attr("Tidx: {int32, int64} = DT_INT32")
     .SetShapeFn([](InferenceContext* c) {
       ShapeHandle unused;

@@ -351,6 +351,19 @@ cc_library(
 )
 
 cc_library(
+    name = "custom_lib",
+    srcs = ["lib/core/custom.cc"],
+    hdrs = ["lib/core/custom.h"],
+    deps = [
+        ":numpy_lib",
+        ":safe_ptr",
+        "//tensorflow/core:framework",
+        "//tensorflow/core:lib",
+        "//third_party/python_runtime:headers",
+    ],
+)
+
+cc_library(
     name = "ndarray_tensor_bridge",
     srcs = ["lib/core/ndarray_tensor_bridge.cc"],
     hdrs = ["lib/core/ndarray_tensor_bridge.h"],
@@ -359,6 +372,7 @@ cc_library(
     ],
     deps = [
         ":bfloat16_lib",
+        ":custom_lib",
         ":numpy_lib",
         "//tensorflow/c:c_api",
         "//tensorflow/core:lib",
@@ -443,6 +457,7 @@ cc_library(
     ],
     deps = [
         ":bfloat16_lib",
+        ":custom_lib",
         ":ndarray_tensor_bridge",
         ":numpy_lib",
         ":safe_ptr",
@@ -4714,6 +4729,7 @@ tf_py_wrap_cc(
         "grappler/model_analyzer.i",
         "grappler/tf_optimizer.i",
         "lib/core/bfloat16.i",
+        "lib/core/custom.i",
         "lib/core/py_exception_registry.i",
         "lib/core/py_func.i",
         "lib/core/strings.i",
@@ -4739,6 +4755,7 @@ tf_py_wrap_cc(
     }),
     deps = [
         ":bfloat16_lib",
+        ":custom_lib",
         ":cost_analyzer_lib",
         ":model_analyzer_lib",
         ":cpp_python_util",

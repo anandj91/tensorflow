@@ -2061,6 +2061,9 @@ bool HloParser::SetValueInLiteral(LocTy loc, double value,
     case BF16:
       return SetValueInLiteralHelper<tensorflow::bfloat16>(loc, value, index,
                                                            literal);
+    case CUSTOM:
+      return SetValueInLiteralHelper<tensorflow::custom>(loc, value, index,
+                                                           literal);
     case F32:
       return SetValueInLiteralHelper<float>(loc, value, index, literal);
     case F64:
@@ -2487,6 +2490,12 @@ struct MinMaxFiniteValue<Eigen::half> {
 template <>
 struct MinMaxFiniteValue<bfloat16> {
   static double max() { return static_cast<double>(bfloat16::highest()); }
+  static double min() { return -max(); }
+};
+
+template <>
+struct MinMaxFiniteValue<custom> {
+  static double max() { return static_cast<double>(custom::highest()); }
   static double min() { return -max(); }
 };
 

@@ -174,6 +174,8 @@ class Tensor {
       : Tensor(scalar_value, host_scalar_tag{}) {}
   explicit Tensor(bfloat16 scalar_value)
       : Tensor(scalar_value, host_scalar_tag{}) {}
+  explicit Tensor(custom scalar_value)
+      : Tensor(scalar_value, host_scalar_tag{}) {}
   explicit Tensor(Eigen::half scalar_value)
       : Tensor(scalar_value, host_scalar_tag{}) {}
   explicit Tensor(ResourceHandle scalar_value)

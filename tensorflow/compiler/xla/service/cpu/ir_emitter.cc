@@ -568,6 +568,7 @@ Status IrEmitter::HandleSort(HloInstruction* hlo) {
     case S16:
     case U16:
     case BF16:
+    case CUSTOM:
     case F16:
     case S32:
     case U32:

@@ -417,7 +417,7 @@ class ExponentialMovingAverage(object):
     zero_debias_true = set()  # set of vars to set `zero_debias=True`
     for var in var_list:
       if var.dtype.base_dtype not in [
-          dtypes.bfloat16, dtypes.float16, dtypes.float32, dtypes.float64
+          dtypes.bfloat16, dtypes.custom, dtypes.float16, dtypes.float32, dtypes.float64
       ]:
         raise TypeError("The variables must be half, float, or double: %s" %
                         var.name)

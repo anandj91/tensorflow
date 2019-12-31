@@ -1299,7 +1299,8 @@ _DTYPE_TO_STR = {
     dtypes.qint16: "qi16",
     dtypes.quint16: "qu16",
     dtypes.qint32: "qi32",
-    dtypes.bfloat16: "b16"
+    dtypes.bfloat16: "b16",
+    dtypes.custom: "custom",
 }
 
 

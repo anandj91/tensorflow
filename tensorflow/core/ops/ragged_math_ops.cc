@@ -34,7 +34,7 @@ REGISTER_OP("RaggedRange")
     .Input("deltas: T")
     .Output("rt_nested_splits: Tsplits")
     .Output("rt_dense_values: T")
-    .Attr("T: {bfloat16, float, double, int32, int64} = DT_INT32")
+    .Attr("T: {bfloat16, custom, float, double, int32, int64} = DT_INT32")
     .Attr("Tsplits: {int32, int64} = DT_INT64")
     .SetShapeFn(RaggedRangeShapeFn);
 

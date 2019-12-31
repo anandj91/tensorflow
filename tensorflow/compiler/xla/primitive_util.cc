@@ -32,6 +32,8 @@ int SignificandWidth(PrimitiveType type) {
       return std::numeric_limits<double>::digits;
     case BF16:
       return kBFloat16MantissaBits + 1;
+    case CUSTOM:
+      return kCustomMantissaBits + 1;
     case F16:
       return 11;
     default:
@@ -40,7 +42,7 @@ int SignificandWidth(PrimitiveType type) {
 }
 
 bool IsFloatingPointType(PrimitiveType type) {
-  return type == F16 || type == F32 || type == F64 || type == BF16;
+  return type == F16 || type == F32 || type == F64 || type == BF16 || type == CUSTOM;
 }
 
 bool IsComplexType(PrimitiveType type) { return type == C64 || type == C128; }
@@ -75,6 +77,7 @@ int BitWidth(PrimitiveType type) {
     case U32:
     case S32:
     case F32:
+    case CUSTOM:
       return 32;
 
     case U64:

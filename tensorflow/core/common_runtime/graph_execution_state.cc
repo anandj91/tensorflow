@@ -347,6 +347,7 @@ bool IsFeedAndFetchSupported(DataType dtype, const string& device_type) {
   if (device_type != DEVICE_GPU) return false;
   switch (dtype) {
     case DT_BFLOAT16:
+    case DT_CUSTOM:
     case DT_BOOL:
     case DT_COMPLEX128:
     case DT_COMPLEX64:

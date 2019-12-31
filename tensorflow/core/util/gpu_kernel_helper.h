@@ -97,6 +97,7 @@ __host__ __device__ inline tensorflow::bfloat16 GpuLdg(
   return_value.value = GpuLdg(reinterpret_cast<const uint16_t*>(address));
   return return_value;
 }
+
 // Already aliased in gpu_device_functions.h
 
 template <typename T>

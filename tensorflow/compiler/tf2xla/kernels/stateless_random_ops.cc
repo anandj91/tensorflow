@@ -140,7 +140,7 @@ class StatelessRandomUniformOp : public XlaOpKernel {
 // TODO(phawkins): generalize to non-float, non-int32 seed types.
 REGISTER_XLA_OP(Name("StatelessRandomUniform")
                     .CompileTimeConstantInput("shape")
-                    .TypeConstraint("dtype", {DT_FLOAT, DT_BFLOAT16})
+                    .TypeConstraint("dtype", {DT_FLOAT, DT_BFLOAT16, DT_CUSTOM})
                     .TypeConstraint("Tseed", DT_INT32),
                 StatelessRandomUniformOp);
 
@@ -241,7 +241,7 @@ class StatelessRandomNormalOp : public XlaOpKernel {
 // TODO(phawkins): generalize to non-float, non-int32 seed types.
 REGISTER_XLA_OP(Name("StatelessRandomNormal")
                     .CompileTimeConstantInput("shape")
-                    .TypeConstraint("dtype", {DT_FLOAT, DT_BFLOAT16})
+                    .TypeConstraint("dtype", {DT_FLOAT, DT_BFLOAT16, DT_CUSTOM})
                     .TypeConstraint("Tseed", DT_INT32),
                 StatelessRandomNormalOp);
 
@@ -284,7 +284,7 @@ class StatelessTruncatedNormalOp : public XlaOpKernel {
 
 REGISTER_XLA_OP(Name("StatelessTruncatedNormal")
                     .CompileTimeConstantInput("shape")
-                    .TypeConstraint("dtype", {DT_FLOAT, DT_BFLOAT16})
+                    .TypeConstraint("dtype", {DT_FLOAT, DT_BFLOAT16, DT_CUSTOM})
                     .TypeConstraint("Tseed", DT_INT32),
                 StatelessTruncatedNormalOp);
 

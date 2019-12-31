@@ -40,6 +40,13 @@ const int kBFloat16ExponentBits = 8;
 // 1, so there is an implicit additional bit of precision.
 const int kBFloat16MantissaBits = 7;
 
+// The number of exponent bits in a CUSTOM value.
+const int kCustomExponentBits = 8;
+
+// The number of mantissa bits in a CUSTOM value. There is an implicit leading
+// 1, so there is an implicit additional bit of precision.
+const int kCustomMantissaBits = 22;
+
 // Returns the XLA primitive type (eg, F32) corresponding to the given
 // template parameter native type (eg, float).
 template <typename NativeT>
@@ -122,6 +129,11 @@ inline PrimitiveType NativeToPrimitiveType<half>() {
 template <>
 inline PrimitiveType NativeToPrimitiveType<bfloat16>() {
   return BF16;
+}
+
+template <>
+inline PrimitiveType NativeToPrimitiveType<custom>() {
+  return CUSTOM;
 }
 
 // Complex
@@ -228,6 +240,11 @@ struct PrimitiveTypeToNative<F16> {
 template <>
 struct PrimitiveTypeToNative<BF16> {
   using type = bfloat16;
+};
+
+template <>
+struct PrimitiveTypeToNative<CUSTOM> {
+  using type = custom;
 };
 
 // Complex

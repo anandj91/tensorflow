@@ -29,7 +29,7 @@ REGISTER_OP("RandomUniform")
     .Output("output: dtype")
     .Attr("seed: int = 0")
     .Attr("seed2: int = 0")
-    .Attr("dtype: {half,bfloat16,float,double}")
+    .Attr("dtype: {half,bfloat16,custom,float,double}")
     .Attr("T: {int32, int64}")
     .SetShapeFn(shape_inference::RandomShape);
 
@@ -56,7 +56,7 @@ REGISTER_OP("RandomStandardNormal")
     .Output("output: dtype")
     .Attr("seed: int = 0")
     .Attr("seed2: int = 0")
-    .Attr("dtype: {half,bfloat16,float,double}")
+    .Attr("dtype: {half,bfloat16,custom,float,double}")
     .Attr("T: {int32, int64}")
     .SetShapeFn(shape_inference::RandomShape);
 
@@ -70,7 +70,7 @@ REGISTER_OP("ParameterizedTruncatedNormal")
     .Output("output: dtype")
     .Attr("seed: int = 0")
     .Attr("seed2: int = 0")
-    .Attr("dtype: {half,bfloat16,float,double}")
+    .Attr("dtype: {half,bfloat16,custom,float,double}")
     .Attr("T: {int32, int64}")
     .SetShapeFn([](InferenceContext* c) {
       ShapeHandle unused;
@@ -88,7 +88,7 @@ REGISTER_OP("TruncatedNormal")
     .Output("output: dtype")
     .Attr("seed: int = 0")
     .Attr("seed2: int = 0")
-    .Attr("dtype: {half,bfloat16,float,double}")
+    .Attr("dtype: {half,bfloat16,custom,float,double}")
     .Attr("T: {int32, int64}")
     .SetShapeFn(shape_inference::RandomShape);
 

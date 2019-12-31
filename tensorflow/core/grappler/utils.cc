@@ -453,6 +453,7 @@ Status SetTensorValue(DataType dtype, int value, Tensor* tensor) {
   switch (dtype) {
     HANDLE_DOUBLE_CASE(DT_HALF);
     HANDLE_DOUBLE_CASE(DT_BFLOAT16);
+    HANDLE_DOUBLE_CASE(DT_CUSTOM);
     HANDLE_DOUBLE_CASE(DT_BOOL);
     HANDLE_DOUBLE_CASE(DT_FLOAT);
     HANDLE_DOUBLE_CASE(DT_DOUBLE);

@@ -157,6 +157,7 @@ llvm::Type* PrimitiveTypeToIrType(PrimitiveType element_type,
       return llvm::Type::getHalfTy(module->getContext());
     case S32:
     case U32:
+    case CUSTOM:
       return llvm::Type::getInt32Ty(module->getContext());
     case S64:
     case U64:

@@ -57,6 +57,9 @@ Status DataTypeToPrimitiveType(DataType data_type, xla::PrimitiveType* type) {
     case tensorflow::DT_BFLOAT16:
       *type = xla::BF16;
       return Status::OK();
+    case tensorflow::DT_CUSTOM:
+      *type = xla::CUSTOM;
+      return Status::OK();
     case tensorflow::DT_HALF:
       *type = xla::F16;
       return Status::OK();

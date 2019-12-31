@@ -76,7 +76,7 @@ message TensorProto {
   // DT_VARIANT
   repeated VariantTensorDataProto variant_val = 15;
 
-  // DT_UINT32
+  // DT_UINT32, DT_CUSTOM
   repeated uint32 uint32_val = 16 [packed = true];
 
   // DT_UINT64

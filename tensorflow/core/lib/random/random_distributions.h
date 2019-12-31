@@ -28,6 +28,7 @@ limitations under the License.
 
 #include "third_party/eigen3/unsupported/Eigen/CXX11/Tensor"
 #include "tensorflow/core/lib/bfloat16/bfloat16.h"
+#include "tensorflow/core/lib/custom/custom.h"
 #include "tensorflow/core/lib/random/philox_random.h"
 
 namespace tensorflow {
@@ -37,6 +38,8 @@ namespace random {
 PHILOX_DEVICE_INLINE Eigen::half Uint16ToHalf(uint16 x);
 // Helper function to convert a 16-bit integer to a bfloat16 between [0..1).
 PHILOX_DEVICE_INLINE bfloat16 Uint16ToGfloat16(uint16 x);
+// Helper function to convert a 32-bit integer to a custom between [0..1).
+PHILOX_DEVICE_INLINE custom Uint32ToCustom(uint32 x);
 // Helper function to convert a 32-bit integer to a float between [0..1).
 PHILOX_DEVICE_INLINE float Uint32ToFloat(uint32 x);
 // Helper function to convert two 32-bit integers to a double between [0..1).
@@ -113,6 +116,30 @@ class UniformDistribution<Generator, bfloat16> {
     ResultType result;
     for (int i = 0; i < kResultElementCount; ++i) {
       result[i] = Uint16ToGfloat16(sample[i]);
+    }
+    return result;
+  }
+};
+
+template <class Generator>
+class UniformDistribution<Generator, custom> {
+ public:
+  // The number of elements that will be returned.
+  static const int kResultElementCount = Generator::kResultElementCount;
+  // Cost of generation of a single element (in cycles).
+  static const int kElementCost = 3;
+  // Indicate that this distribution may take variable number of samples
+  // during the runtime.
+  static const bool kVariableSamplesPerOutput = false;
+  typedef Array<custom, kResultElementCount> ResultType;
+  typedef custom ResultElementType;
+
+  PHILOX_DEVICE_INLINE
+  ResultType operator()(Generator* gen) {
+    typename Generator::ResultType sample = (*gen)();
+    ResultType result;
+    for (int i = 0; i < kResultElementCount; ++i) {
+      result[i] = Uint32ToCustom(sample[i]);
     }
     return result;
   }
@@ -448,6 +475,36 @@ class NormalDistribution<Generator, bfloat16> {
 };
 
 template <class Generator>
+class NormalDistribution<Generator, custom> {
+ public:
+  // The number of elements that will be returned.
+  static const int kResultElementCount = Generator::kResultElementCount;
+  // Cost of generation of a single element (in cycles).
+  static const int kElementCost = 70;
+  // Indicate that this distribution may take variable number of samples
+  // during the runtime.
+  static const bool kVariableSamplesPerOutput = false;
+  typedef Array<custom, kResultElementCount> ResultType;
+  typedef custom ResultElementType;
+
+  PHILOX_DEVICE_INLINE
+  ResultType operator()(Generator* gen) {
+    typename Generator::ResultType sample = (*gen)();
+    ResultType result;
+    static_assert(kResultElementCount % 2 == 0,
+                  "kResultElementCount should be an even number");
+    for (int i = 0; i < kResultElementCount; i += 2) {
+      float f[2];
+      // Box-Muller transform requires processing 2 elements at a time.
+      BoxMullerFloat(sample[i], sample[i + 1], &f[0], &f[1]);
+      result[i] = custom(f[0]);
+      result[i + 1] = custom(f[1]);
+    }
+    return result;
+  }
+};
+
+template <class Generator>
 class NormalDistribution<Generator, float> {
  public:
   // The number of elements that will be returned.
@@ -598,6 +655,52 @@ class TruncatedNormalDistribution<SingleSampleGenerator, bfloat16> {
       }
       if (Eigen::numext::abs(f[1]) < kTruncateValue) {
         results[index++] = bfloat16(f[1]);
+        if (index >= kResultElementCount) {
+          return results;
+        }
+      }
+    }
+  }
+};
+
+template <class SingleSampleGenerator>
+class TruncatedNormalDistribution<SingleSampleGenerator, custom> {
+ public:
+  // The number of elements that will be returned.
+  static const int kResultElementCount =
+      SingleSampleGenerator::kNativeElementCount;
+  // Cost of generation of a single element (in cycles).
+  static const int kElementCost = 90;
+  // Indicate that this distribution may take variable number of samples
+  // during the runtime.
+  static const bool kVariableSamplesPerOutput = true;
+  // The threshold where the normal distribution is truncated.
+  const float kTruncateValue = 2.0f;
+
+  typedef Array<custom, kResultElementCount> ResultType;
+  typedef custom ResultElementType;
+
+  PHILOX_DEVICE_INLINE
+  ResultType operator()(SingleSampleGenerator* gen) {
+    ResultType results;
+    int index = 0;
+    while (true) {
+      // Repeatedly take samples from the normal distribution, until we have
+      // the desired number of elements that fall within the pre-defined cutoff
+      // threshold.
+      const uint32 x0 = (*gen)();
+      const uint32 x1 = (*gen)();
+      float f[2];
+      BoxMullerFloat(x0, x1, &f[0], &f[1]);
+
+      if (Eigen::numext::abs(f[0]) < kTruncateValue) {
+        results[index++] = custom(f[0]);
+        if (index >= kResultElementCount) {
+          return results;
+        }
+      }
+      if (Eigen::numext::abs(f[1]) < kTruncateValue) {
+        results[index++] = custom(f[1]);
         if (index >= kResultElementCount) {
           return results;
         }
@@ -786,6 +889,27 @@ PHILOX_DEVICE_INLINE bfloat16 Uint16ToGfloat16(uint16 x) {
   // in [1, 2). The minus will not cause a rounding that makes the result 1.
   // Instead it will just be close to 1.
   return result - bfloat16(1.0);
+}
+
+// Helper function to convert an 16-bit integer to a custom between [0..1).
+// This can create a uniform distribution of values between [0..1).
+PHILOX_DEVICE_INLINE custom Uint32ToCustom(uint32 x) {
+  // bfloat are formatted as follows (MSB first):
+  //    sign(1) exponent(8) mantissa(7)
+  // Conceptually construct the following:
+  //    sign == 0
+  //    exponent == 127  -- an excess 127 representation of a zero exponent
+  //    mantissa == 7 random bits
+  const uint32 man = x & 0x7fu;  // 7 bit mantissa
+  const uint32 exp = static_cast<uint32>(127);
+  const uint32 val = (exp << 7) | man;
+
+  custom result;
+  memcpy(&result, &val, sizeof(val));
+  // The mantissa has an implicit leading 1, so the above code creates a value
+  // in [1, 2). The minus will not cause a rounding that makes the result 1.
+  // Instead it will just be close to 1.
+  return result - custom(1.0);
 }
 
 // Helper function to convert an 32-bit integer to a float between [0..1).

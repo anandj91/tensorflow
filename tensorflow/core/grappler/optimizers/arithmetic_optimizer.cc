@@ -164,6 +164,9 @@ bool GetElementUnexhaustive(const Tensor& t, int i, const std::set<int>& dtypes,
     case DT_BFLOAT16:
       *element = complex128(t.flat<bfloat16>()(i));
       return true;
+    case DT_CUSTOM:
+      *element = complex128(t.flat<custom>()(i));
+      return true;
     case DT_HALF:
       *element = complex128(static_cast<double>(t.flat<Eigen::half>()(i)), 0);
       return true;
@@ -2662,7 +2665,7 @@ class ConvertLog1pStage : public ArithmeticOptimizerStage {
       for (int k = 0; k < constant.NumElements(); ++k) {
         if (!GetElementUnexhaustive(constant, k,
                                     {DT_BFLOAT16, DT_HALF, DT_FLOAT, DT_DOUBLE,
-                                     DT_COMPLEX64, DT_COMPLEX128},
+                                     DT_COMPLEX64, DT_COMPLEX128, DT_CUSTOM},
                                     &element)) {
           // input data type is not supported by log1p. Skip.
           return Status::OK();
@@ -2728,7 +2731,7 @@ class ConvertExpm1Stage : public ArithmeticOptimizerStage {
     for (int k = 0; k < constant.NumElements(); ++k) {
       if (!GetElementUnexhaustive(constant, k,
                                   {DT_BFLOAT16, DT_HALF, DT_FLOAT, DT_DOUBLE,
-                                   DT_COMPLEX64, DT_COMPLEX128},
+                                   DT_COMPLEX64, DT_COMPLEX128, DT_CUSTOM},
                                   &element)) {
         // input data type is not supported by expm1. Skip.
         return Status::OK();

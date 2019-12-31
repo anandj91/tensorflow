@@ -611,7 +611,9 @@ def MakeNdarray(tensor):
       values.extend([last] * padding)
     return np.array(values, dtype=dtype).reshape(shape)
 
-  if tensor_dtype == dtypes.float16 or tensor_dtype == dtypes.bfloat16:
+  if tensor_dtype == dtypes.float16 or \
+     tensor_dtype == dtypes.bfloat16 or \
+     tensor_dtype == dtypes.custom:
     # the half_val field of the TensorProto stores the binary representation
     # of the fp16: we need to reinterpret this as a proper float16
     values = np.fromiter(tensor.half_val, dtype=np.uint16)

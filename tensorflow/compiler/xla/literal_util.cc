@@ -98,6 +98,16 @@ Literal ConvertType(LiteralSlice literal) {
   return ConvertType<float, bfloat16>(f32_literal);
 }
 
+/* static */ Literal LiteralUtil::ConvertCustomToF32(
+    const LiteralSlice& custom_literal) {
+  return ConvertType<custom, float>(custom_literal);
+}
+
+/* static */ Literal LiteralUtil::ConvertF32ToCustom(
+    const LiteralSlice& f32_literal) {
+  return ConvertType<float, custom>(f32_literal);
+}
+
 /* static */ Literal LiteralUtil::CreateToken() {
   return Literal(ShapeUtil::MakeTokenShape());
 }
@@ -124,6 +134,8 @@ Literal ConvertType(LiteralSlice literal) {
       return LiteralUtil::CreateR0<half>(static_cast<half>(0.0f));
     case BF16:
       return LiteralUtil::CreateR0<bfloat16>(static_cast<bfloat16>(0.0f));
+    case CUSTOM:
+      return LiteralUtil::CreateR0<custom>(static_cast<custom>(0.0f));
     case F32:
       return LiteralUtil::CreateR0<float>(0);
     case F64:
@@ -161,6 +173,8 @@ Literal ConvertType(LiteralSlice literal) {
       return LiteralUtil::CreateR0<half>(static_cast<half>(1.0f));
     case BF16:
       return LiteralUtil::CreateR0<bfloat16>(static_cast<bfloat16>(1.0f));
+    case CUSTOM:
+      return LiteralUtil::CreateR0<custom>(static_cast<custom>(1.0f));
     case F32:
       return LiteralUtil::CreateR0<float>(1);
     case F64:
@@ -218,6 +232,9 @@ Literal ConvertType(LiteralSlice literal) {
     case BF16:
       return LiteralUtil::CreateR0<bfloat16>(
           static_cast<bfloat16>(-std::numeric_limits<float>::infinity()));
+    case CUSTOM:
+      return LiteralUtil::CreateR0<custom>(
+          static_cast<custom>(-std::numeric_limits<float>::infinity()));
     case TUPLE:
       LOG(FATAL) << "tuple element type has no minimum value";
     case OPAQUE_TYPE:
@@ -258,6 +275,9 @@ Literal ConvertType(LiteralSlice literal) {
     case BF16:
       return LiteralUtil::CreateR0<bfloat16>(
           static_cast<bfloat16>(std::numeric_limits<float>::infinity()));
+    case CUSTOM:
+      return LiteralUtil::CreateR0<custom>(
+          static_cast<custom>(std::numeric_limits<float>::infinity()));
     case TUPLE:
       LOG(FATAL) << "tuple element type has no maximum value";
     case OPAQUE_TYPE:
@@ -380,6 +400,9 @@ Literal ConvertType(LiteralSlice literal) {
     case BF16:
       return LiteralUtil::CreateR0<bfloat16>(
           literal.GetFirstElement<bfloat16>());
+    case CUSTOM:
+      return LiteralUtil::CreateR0<custom>(
+          literal.GetFirstElement<custom>());
     case F16:
       return LiteralUtil::CreateR0<half>(literal.GetFirstElement<half>());
     case S16:

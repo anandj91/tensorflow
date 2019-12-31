@@ -49,6 +49,8 @@ XlaOp Epsilon(XlaBuilder* builder, PrimitiveType type) {
           static_cast<Eigen::half>(Eigen::NumTraits<Eigen::half>::epsilon()));
     case BF16:
       return ConstantR0<bfloat16>(builder, bfloat16::epsilon());
+    case CUSTOM:
+      return ConstantR0<custom>(builder, custom::epsilon());
     case F32:
       return ConstantR0<float>(builder, std::numeric_limits<float>::epsilon());
     case F64:
@@ -71,6 +73,8 @@ XlaOp MinFiniteValue(XlaBuilder* builder, PrimitiveType type) {
                                      Eigen::NumTraits<Eigen::half>::lowest());
     case BF16:
       return ConstantR0<bfloat16>(builder, bfloat16::lowest());
+    case CUSTOM:
+      return ConstantR0<custom>(builder, custom::lowest());
     case F32:
       return ConstantR0<float>(builder, -std::numeric_limits<float>::max());
     case F64:
@@ -87,6 +91,8 @@ XlaOp MinPositiveNormalValue(XlaBuilder* builder, PrimitiveType type) {
                                      std::numeric_limits<Eigen::half>::min());
     case BF16:
       return ConstantR0<bfloat16>(builder, bfloat16::min_positive_normal());
+    case CUSTOM:
+      return ConstantR0<custom>(builder, custom::min_positive_normal());
     case F32:
       return ConstantR0<float>(builder, std::numeric_limits<float>::min());
     case F64:
@@ -109,6 +115,8 @@ XlaOp MaxFiniteValue(XlaBuilder* builder, PrimitiveType type) {
                                      Eigen::NumTraits<Eigen::half>::highest());
     case BF16:
       return ConstantR0<bfloat16>(builder, bfloat16::highest());
+    case CUSTOM:
+      return ConstantR0<custom>(builder, custom::highest());
     case F32:
       return ConstantR0<float>(builder, std::numeric_limits<float>::max());
     case F64:
@@ -127,6 +135,9 @@ XlaOp NanValue(XlaBuilder* builder, PrimitiveType type) {
       case BF16:
         return ConstantR0<bfloat16>(
             builder, bfloat16(std::numeric_limits<float>::quiet_NaN()));
+      case CUSTOM:
+        return ConstantR0<custom>(
+            builder, custom(std::numeric_limits<float>::quiet_NaN()));
       case F32:
         return ConstantR0<float>(builder,
                                  std::numeric_limits<float>::quiet_NaN());
