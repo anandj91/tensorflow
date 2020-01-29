@@ -440,6 +440,7 @@ class HloEvaluatorTypedVisitor : public DfsHloVisitorWithDefault {
   template <typename NativeT,
             typename std::enable_if<
                 std::is_same<NativeT, bfloat16>::value ||
+                std::is_same<NativeT, custom>::value ||
                 std::is_same<NativeT, Eigen::half>::value ||
                 std::is_floating_point<NativeT>::value>::type* = nullptr>
   Status HandleSign(HloInstruction* sign) {
@@ -2500,6 +2501,7 @@ class HloEvaluatorTypedVisitor : public DfsHloVisitorWithDefault {
       typename NativeT,
       typename std::enable_if<
           std::is_same<NativeT, bfloat16>::value ||
+          std::is_same<NativeT, custom>::value ||
           std::is_same<NativeT, Eigen::half>::value ||
           std::is_integral<NativeT>::value || is_complex_t<NativeT>::value ||
           std::is_floating_point<NativeT>::value>::type* = nullptr>
@@ -2518,6 +2520,7 @@ class HloEvaluatorTypedVisitor : public DfsHloVisitorWithDefault {
       typename NativeT,
       typename std::enable_if<
           !(std::is_same<NativeT, bfloat16>::value ||
+            std::is_same<NativeT, custom>::value ||
             std::is_same<NativeT, Eigen::half>::value ||
             std::is_integral<NativeT>::value || is_complex_t<NativeT>::value ||
             std::is_floating_point<NativeT>::value)>::type* = nullptr>
@@ -2872,6 +2875,7 @@ extern template class HloEvaluatorTypedVisitor<double>;
 extern template class HloEvaluatorTypedVisitor<complex64>;
 extern template class HloEvaluatorTypedVisitor<complex128>;
 extern template class HloEvaluatorTypedVisitor<bfloat16, float>;
+extern template class HloEvaluatorTypedVisitor<custom, float>;
 
 }  // namespace xla
 

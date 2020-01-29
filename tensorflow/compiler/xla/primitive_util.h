@@ -124,6 +124,11 @@ inline PrimitiveType NativeToPrimitiveType<bfloat16>() {
   return BF16;
 }
 
+template <>
+inline PrimitiveType NativeToPrimitiveType<custom>() {
+  return CUSTOM;
+}
+
 // Complex
 template <>
 inline PrimitiveType NativeToPrimitiveType<complex64>() {
@@ -136,6 +141,8 @@ inline PrimitiveType NativeToPrimitiveType<complex128>() {
 }
 
 bool IsFloatingPointType(PrimitiveType type);
+
+bool IsCustomType(PrimitiveType type);
 
 bool IsComplexType(PrimitiveType type);
 
@@ -228,6 +235,11 @@ struct PrimitiveTypeToNative<F16> {
 template <>
 struct PrimitiveTypeToNative<BF16> {
   using type = bfloat16;
+};
+
+template <>
+struct PrimitiveTypeToNative<CUSTOM> {
+  using type = custom;
 };
 
 // Complex

@@ -35,6 +35,7 @@ limitations under the License.
 %include "tensorflow/python/client/device_lib.i"
 
 %include "tensorflow/python/lib/core/bfloat16.i"
+%include "tensorflow/python/lib/core/custom.i"
 
 %include "tensorflow/python/lib/io/file_io.i"
 %include "tensorflow/python/training/quantize_training.i"

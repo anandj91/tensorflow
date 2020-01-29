@@ -81,6 +81,23 @@ struct ReduceEigenImpl<Device, OUT_T, IN_T, ReductionAxes,
 template <typename Device, typename OUT_T, typename IN_T,
           typename ReductionAxes>
 struct ReduceEigenImpl<Device, OUT_T, IN_T, ReductionAxes,
+                       functor::EuclideanNormReducer<custom>> {
+  void operator()(const Device& d, OUT_T out, IN_T in,
+                  const ReductionAxes& reduction_axes,
+                  const functor::EuclideanNormReducer<custom>& reducer) {
+    static_assert(std::is_same<custom, typename OUT_T::Scalar>::value, "");
+    Eigen::internal::SumReducer<float> sum_reducer;
+    auto in_as_float = in.template cast<float>();
+    out.device(d) = (in_as_float * in_as_float.conjugate())
+                        .reduce(reduction_axes, sum_reducer)
+                        .sqrt()
+                        .template cast<custom>();
+  }
+};
+
+template <typename Device, typename OUT_T, typename IN_T,
+          typename ReductionAxes>
+struct ReduceEigenImpl<Device, OUT_T, IN_T, ReductionAxes,
                        functor::EuclideanNormReducer<bfloat16>> {
   void operator()(const Device& d, OUT_T out, IN_T in,
                   const ReductionAxes& reduction_axes,

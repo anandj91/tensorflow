@@ -80,7 +80,8 @@ enum PrimitiveType {
   // primitive type will have empty dimensions and tuple_shapes fields.
   TOKEN = 17;
 
-  // Next = 19
+  CUSTOM = 19;
+  // Next = 20
 }
 
 // Describes the padding configuration for Pad operation. The padding amount on
@@ -379,8 +380,9 @@ message LiteralProto {
   bytes bf16s = 13;
   bytes u16s = 16;
   bytes s16s = 17;
+  bytes customs = 19;
   repeated int64 sparse_indices = 14;
-  // Next = 19
+  // Next = 20
 }
 
 message WindowDimension {

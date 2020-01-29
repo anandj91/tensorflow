@@ -120,6 +120,7 @@ PYBIND11_MODULE(xla_extension, m) {
       .value("U64", U64)
       .value("F16", F16)
       .value("BF16", BF16)
+      .value("CUSTOM", CUSTOM)
       .value("F32", F32)
       .value("F64", F64)
       .value("C64", C64)

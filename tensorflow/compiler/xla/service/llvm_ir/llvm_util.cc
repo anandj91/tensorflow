@@ -163,6 +163,10 @@ llvm::Type* PrimitiveTypeToIrType(PrimitiveType element_type,
       return llvm::Type::getInt64Ty(module->getContext());
     case F32:
       return llvm::Type::getFloatTy(module->getContext());
+    case CUSTOM:
+      static llvm::ArrayRef<llvm::Type*> types(llvm::Type::getInt32Ty(module->getContext()));
+      static auto s_type = llvm::StructType::create(module->getContext(), types, "custom", true);
+      return s_type;
     case F64:
       return llvm::Type::getDoubleTy(module->getContext());
     case C64: {

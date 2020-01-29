@@ -124,6 +124,8 @@ Literal ConvertType(LiteralSlice literal) {
       return LiteralUtil::CreateR0<half>(static_cast<half>(0.0f));
     case BF16:
       return LiteralUtil::CreateR0<bfloat16>(static_cast<bfloat16>(0.0f));
+    case CUSTOM:
+      return LiteralUtil::CreateR0<custom>(static_cast<custom>(0.0f));
     case F32:
       return LiteralUtil::CreateR0<float>(0);
     case F64:
@@ -161,6 +163,8 @@ Literal ConvertType(LiteralSlice literal) {
       return LiteralUtil::CreateR0<half>(static_cast<half>(1.0f));
     case BF16:
       return LiteralUtil::CreateR0<bfloat16>(static_cast<bfloat16>(1.0f));
+    case CUSTOM:
+      return LiteralUtil::CreateR0<custom>(static_cast<custom>(1.0f));
     case F32:
       return LiteralUtil::CreateR0<float>(1);
     case F64:
@@ -218,6 +222,9 @@ Literal ConvertType(LiteralSlice literal) {
     case BF16:
       return LiteralUtil::CreateR0<bfloat16>(
           static_cast<bfloat16>(-std::numeric_limits<float>::infinity()));
+    case CUSTOM:
+      return LiteralUtil::CreateR0<custom>(
+          static_cast<custom>(-std::numeric_limits<float>::infinity()));
     case TUPLE:
       LOG(FATAL) << "tuple element type has no minimum value";
     case OPAQUE_TYPE:
@@ -258,6 +265,9 @@ Literal ConvertType(LiteralSlice literal) {
     case BF16:
       return LiteralUtil::CreateR0<bfloat16>(
           static_cast<bfloat16>(std::numeric_limits<float>::infinity()));
+    case CUSTOM:
+      return LiteralUtil::CreateR0<custom>(
+          static_cast<custom>(std::numeric_limits<float>::infinity()));
     case TUPLE:
       LOG(FATAL) << "tuple element type has no maximum value";
     case OPAQUE_TYPE:
@@ -393,6 +403,9 @@ Literal ConvertType(LiteralSlice literal) {
       return LiteralUtil::CreateR0<int32>(literal.GetFirstElement<int32>());
     case U32:
       return LiteralUtil::CreateR0<uint32>(literal.GetFirstElement<uint32>());
+    case CUSTOM:
+      return LiteralUtil::CreateR0<custom>(
+          literal.GetFirstElement<custom>());
     // 64 bit types.
     case C64:
       return LiteralUtil::CreateR0<complex64>(

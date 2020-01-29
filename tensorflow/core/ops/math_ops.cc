@@ -889,7 +889,7 @@ REGISTER_OP("MatMul")
     .Attr("transpose_b: bool = false")
     .Attr(
         "T: {bfloat16, half, float, double, int32, int64, complex64, "
-        "complex128}")
+        "complex128, custom}")
     .SetShapeFn(shape_inference::MatMulShape);
 
 REGISTER_OP("SparseMatMul")

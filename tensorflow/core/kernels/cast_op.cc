@@ -248,6 +248,8 @@ CURRY_TYPES2(REGISTER_CAST_GPU, std::complex<float>);
 CURRY_TYPES2(REGISTER_CAST_GPU, std::complex<double>);
 REGISTER_CAST_GPU(float, bfloat16);
 REGISTER_CAST_GPU(bfloat16, float);
+REGISTER_CAST_GPU(float, custom);
+REGISTER_CAST_GPU(custom, float);
 
 #undef REGISTER_CAST_GPU
 #endif  // GOOGLE_CUDA || TENSORFLOW_USE_ROCM

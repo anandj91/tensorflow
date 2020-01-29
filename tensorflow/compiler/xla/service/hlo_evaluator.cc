@@ -212,6 +212,9 @@ HloEvaluator::HloEvaluator(int64 max_loop_iterations)
   typed_visitors_[BF16] =
       absl::make_unique<HloEvaluatorTypedVisitor<bfloat16, float>>(this);
 
+  typed_visitors_[CUSTOM] =
+      absl::make_unique<HloEvaluatorTypedVisitor<custom, float>>(this);
+
   typed_visitors_[TUPLE] =
       absl::make_unique<FunctionVisitor>([](HloInstruction*) {
         return Unimplemented(

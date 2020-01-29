@@ -1949,6 +1949,10 @@ void LiteralBase::Piece::WriteToProto(LiteralProto* proto) const {
         ConvertEndianShort(proto->mutable_bf16s());
       }
       break;
+    case CUSTOM:
+      *proto->mutable_customs() = string(
+          reinterpret_cast<const char*>(data<custom>().data()), size_bytes());
+      break;
     case F32:
       CopyToRepeatedField(proto->mutable_f32s(), data<float>());
       break;
