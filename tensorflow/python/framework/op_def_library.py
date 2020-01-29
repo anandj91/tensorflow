@@ -49,14 +49,15 @@ def _AttrValue(attr_protos, name):
                   (name, attr_protos))
 
 
-def _SatisfiesTypeConstraint(dtype, attr_def, param_name):
+def _SatisfiesTypeConstraint(dtype, attr_def, param_name, op_def=None):
   if attr_def.HasField("allowed_values"):
+    op_name = "Unknown" if op_def is None else op_def.name
     allowed_list = attr_def.allowed_values.list.type
     if dtype not in allowed_list:
       raise TypeError(
           "Value passed to parameter '%s' has DataType %s not in list of "
-          "allowed values: %s" %
-          (param_name, dtypes.as_dtype(dtype).name,
+          "allowed values of %s: %s" %
+          (param_name, dtypes.as_dtype(dtype).name, op_name,
            ", ".join(dtypes.as_dtype(x).name for x in allowed_list)))
 
 
@@ -612,7 +613,7 @@ class OpDefLibrary(object):
             inferred_from[input_arg.type_attr] = input_name
             type_attr = _Attr(op_def, input_arg.type_attr)
             _SatisfiesTypeConstraint(base_types[0], type_attr,
-                                     param_name=input_name)
+                                     param_name=input_name, op_def=op_def)
         elif input_arg.type_attr:
           # <type-attr>
           attr_value = base_types[0]
@@ -623,7 +624,7 @@ class OpDefLibrary(object):
             for base_type in base_types:
               _SatisfiesTypeConstraint(base_type,
                                        _Attr(op_def, input_arg.type_attr),
-                                       param_name=input_name)
+                                       param_name=input_name, op_def=op_def)
             attrs[input_arg.type_attr] = attr_value
             inferred_from[input_arg.type_attr] = input_name
         elif input_arg.type_list_attr:
@@ -643,7 +644,7 @@ class OpDefLibrary(object):
             for base_type in base_types:
               _SatisfiesTypeConstraint(base_type,
                                        _Attr(op_def, input_arg.type_list_attr),
-                                       param_name=input_name)
+                                       param_name=input_name, op_def=op_def)
             attrs[input_arg.type_list_attr] = attr_value
             inferred_from[input_arg.type_list_attr] = input_name
         else:
