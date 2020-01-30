@@ -389,7 +389,7 @@ REGISTER_OP("Add")
     .Output("z: T")
     .Attr(
         "T: {bfloat16, half, float, double, uint8, int8, int16, int32, int64, "
-        "complex64, complex128, string}")
+        "complex64, complex128, string, custom}")
     .SetShapeFn(shape_inference::BroadcastBinaryOpShapeFn);
 
 // TODO(rmlarsen): Add a Python wrapper that swiches non-string instances to
