@@ -375,7 +375,7 @@ ShapeUtil::MakeShapeWithDescendingLayoutAndSamePhysicalLayout(
     case F32:
     case F64:
       return true;
-
+    case CUS:
     case PRED:
     case U8:
     case U16:
@@ -399,6 +399,10 @@ ShapeUtil::MakeShapeWithDescendingLayoutAndSamePhysicalLayout(
 
 /* static */ bool ShapeUtil::ElementIsFloating(const Shape& shape) {
   return primitive_util::IsFloatingPointType(shape.element_type());
+}
+
+/* static */ bool ShapeUtil::ElementIsCustom(const Shape& shape) {
+  return primitive_util::IsCustomType(shape.element_type());
 }
 
 /* static */ bool ShapeUtil::IsNestedTuple(const Shape& shape) {
@@ -621,6 +625,8 @@ ShapeUtil::MakeShapeWithDescendingLayoutAndSamePhysicalLayout(
       return sizeof(uint64);
     case BF16:
       return sizeof(float) / 2;
+    case CUS:
+      return sizeof(cus);
     case F16:
       return sizeof(float) / 2;
     case F32:

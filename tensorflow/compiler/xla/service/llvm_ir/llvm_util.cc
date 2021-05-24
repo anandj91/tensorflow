@@ -159,6 +159,11 @@ llvm::Type* PrimitiveTypeToIrType(PrimitiveType element_type,
     case F16:
       return llvm::Type::getHalfTy(module->getContext());
     case S32:
+    case CUS:
+      return llvm::Type::getInt32Ty(module->getContext());
+      //return llvm::StructType::create(
+      //    {llvm::Type::getInt32Ty(module->getContext())},
+      //    "cus", /*isPacked=*/ true);
     case U32:
       return llvm::Type::getInt32Ty(module->getContext());
     case S64:

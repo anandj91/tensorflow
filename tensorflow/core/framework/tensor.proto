@@ -83,6 +83,9 @@ message TensorProto {
 
   // DT_UINT64
   repeated uint64 uint64_val = 17 [packed = true];
+
+  // DT_CUS
+  repeated uint32 cus_val = 18 [packed = true];
 }
 
 // Protocol buffer representing the serialization format of DT_VARIANT tensors.

@@ -373,7 +373,7 @@ REGISTER_OP("Add")
     .Input("y: T")
     .Output("z: T")
     .Attr(
-        "T: {bfloat16, half, float, double, uint8, int8, int16, int32, int64, "
+        "T: {bfloat16, cus, half, float, double, uint8, int8, int16, int32, int64, "
         "complex64, complex128, string}")
     .SetShapeFn(shape_inference::BroadcastBinaryOpShapeFn);
 

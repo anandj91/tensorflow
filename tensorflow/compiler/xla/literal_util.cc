@@ -93,14 +93,29 @@ Literal ConvertType(LiteralSlice literal) {
   return ConvertType<bfloat16, float>(bf16_literal);
 }
 
+/* static */ Literal LiteralUtil::ConvertCUSToF32(
+    const LiteralSlice& cus_literal) {
+  return ConvertType<cus, float>(cus_literal);
+}
+
 /* static */ Literal LiteralUtil::ConvertBF16ToF64(
     const LiteralSlice& bf16_literal) {
   return ConvertType<bfloat16, double>(bf16_literal);
 }
 
+/* static */ Literal LiteralUtil::ConvertCUSToF64(
+    const LiteralSlice& cus_literal) {
+  return ConvertType<cus, double>(cus_literal);
+}
+
 /* static */ Literal LiteralUtil::ConvertF32ToBF16(
     const LiteralSlice& f32_literal) {
   return ConvertType<float, bfloat16>(f32_literal);
+}
+
+/* static */ Literal LiteralUtil::ConvertF32ToCUS(
+    const LiteralSlice& f32_literal) {
+  return ConvertType<float, cus>(f32_literal);
 }
 
 /* static */ Literal LiteralUtil::ConvertF32ToF64(
@@ -111,6 +126,11 @@ Literal ConvertType(LiteralSlice literal) {
 /* static */ Literal LiteralUtil::ConvertF64ToBF16(
     const LiteralSlice& f64_literal) {
   return ConvertType<double, bfloat16>(f64_literal);
+}
+
+/* static */ Literal LiteralUtil::ConvertF64ToCUS(
+    const LiteralSlice& f64_literal) {
+  return ConvertType<double, cus>(f64_literal);
 }
 
 /* static */ Literal LiteralUtil::ConvertF64ToF32(
@@ -439,6 +459,8 @@ Literal ConvertType(LiteralSlice literal) {
     case U16:
       return LiteralUtil::CreateR0<uint16>(literal.GetFirstElement<uint16>());
     // 32 bit types.
+    case CUS:
+      return LiteralUtil::CreateR0<cus>(literal.GetFirstElement<cus>());
     case F32:
       return LiteralUtil::CreateR0<float>(literal.GetFirstElement<float>());
     case S32:

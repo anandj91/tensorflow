@@ -127,6 +127,10 @@ Status MakeErrorStatus(bfloat16 lhs, bfloat16 rhs,
                        absl::Span<const int64> multi_index) {
   return MakeBitwiseErrorStatus<bfloat16, uint16>(lhs, rhs, multi_index);
 }
+Status MakeErrorStatus(cus lhs, cus rhs,
+                       absl::Span<const int64> multi_index) {
+  return MakeBitwiseErrorStatus<cus, uint32>(lhs, rhs, multi_index);
+}
 template <>
 Status MakeErrorStatus(Eigen::half lhs, Eigen::half rhs,
                        absl::Span<const int64> multi_index) {
@@ -229,6 +233,9 @@ bool IsNan(NativeT value) {
 // Converts the given floating-point value to a string.
 string FpValueToString(bfloat16 value) {
   return absl::StrFormat("%10.4g", static_cast<double>(value));
+}
+string FpValueToString(cus value) {
+  return absl::StrFormat("%15.9g", static_cast<double>(value));
 }
 
 string FpValueToString(half value) {
@@ -735,6 +742,9 @@ Status EqualHelper(const LiteralSlice& expected, const LiteralSlice& actual,
       case BF16:
         result = Equal<bfloat16>(expected, actual, index, 0, miscompared_ptr);
         break;
+      case CUS:
+        result = Equal<cus>(expected, actual, index, 0, miscompared_ptr);
+        break;
       case F16:
         result = Equal<half>(expected, actual, index, 0, miscompared_ptr);
         break;
@@ -817,6 +827,11 @@ Status NearHelper(const LiteralSlice& expected, const LiteralSlice& actual,
     switch (expected.shape().element_type()) {
       case BF16:
         return NearComparator<bfloat16>::Compare(expected, actual, shape_index,
+                                                 error, use_detailed_message,
+                                                 miscompare_callback);
+        break;
+      case CUS:
+        return NearComparator<cus>::Compare(expected, actual, shape_index,
                                                  error, use_detailed_message,
                                                  miscompare_callback);
         break;

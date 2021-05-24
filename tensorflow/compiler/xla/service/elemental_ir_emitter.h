@@ -75,6 +75,9 @@ class ElementalIrEmitter : public IrBuilderMixin<ElementalIrEmitter> {
   virtual StatusOr<llvm::Value*> EmitComplexUnaryOp(const HloInstruction* op,
                                                     llvm::Value* operand_value);
 
+  virtual StatusOr<llvm::Value*> EmitCustomUnaryOp(const HloInstruction* op,
+                                                   llvm::Value* operand_value);
+
   llvm::Value* IsZero(llvm::Value* v);
   llvm::Value* IsIntMinDivisionOverflow(llvm::Value* lhs, llvm::Value* rhs);
   llvm::Value* GetZero(llvm::Type* type);
@@ -97,6 +100,10 @@ class ElementalIrEmitter : public IrBuilderMixin<ElementalIrEmitter> {
                                                    llvm::Value* rhs_value);
 
   virtual StatusOr<llvm::Value*> EmitComplexBinaryOp(const HloInstruction* op,
+                                                     llvm::Value* lhs_value,
+                                                     llvm::Value* rhs_value);
+
+  virtual StatusOr<llvm::Value*> EmitCustomBinaryOp(const HloInstruction* op,
                                                      llvm::Value* lhs_value,
                                                      llvm::Value* rhs_value);
 

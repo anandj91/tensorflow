@@ -77,6 +77,7 @@ exports_files(
         "cpu_info.h",
         "cuda_libdevice_path.h",
         "bfloat16.h",
+        "cus.h",
         "demangle.h",
         "env.cc",
         "env.h",
@@ -139,6 +140,14 @@ cc_library(
     deps = [
         ":byte_order",
         "//third_party/eigen3",
+    ],
+)
+
+cc_library(
+    name = "cus",
+    hdrs = ["cus.h"],
+    compatible_with = get_compatible_with_portable(),
+    deps = [
     ],
 )
 
@@ -806,6 +815,7 @@ cc_library(
     deps = [
         ":platform",
         ":bfloat16",
+        ":cus",
         ":tstring",
     ] + tf_platform_deps("types"),
 )
@@ -1341,6 +1351,7 @@ filegroup(
         "abi.h",
         "base64.h",
         "bfloat16.h",
+        "cus.h",
         "casts.h",
         "coding.h",
         "context.h",
@@ -1428,6 +1439,7 @@ filegroup(
     name = "framework_lite_hdrs",
     srcs = [
         "bfloat16.h",
+        "cus.h",
         "byte_order.h",
         "cpu_info.h",
         "ctstring.h",
@@ -1449,6 +1461,7 @@ filegroup(
     name = "lib_internal_private_hdrs",
     srcs = [
         "bfloat16.h",
+        "cus.h",
         "raw_coding.h",
         "scanner.h",
         "str_util.h",
@@ -1495,6 +1508,7 @@ filegroup(
     name = "tflite_portable_logging_hdrs",
     srcs = [
         "bfloat16.h",
+        "cus.h",
         "ctstring.h",
         "ctstring_internal.h",
         "logging.h",
@@ -1510,6 +1524,7 @@ filegroup(
     name = "jpeg_internal_hdrs",
     srcs = [
         "bfloat16.h",
+        "cus.h",
         "ctstring.h",
         "ctstring_internal.h",
         "dynamic_annotations.h",
@@ -1528,6 +1543,7 @@ filegroup(
     name = "gif_internal_hdrs",
     srcs = [
         "bfloat16.h",
+        "cus.h",
         "ctstring.h",
         "ctstring_internal.h",
         "dynamic_annotations.h",
@@ -1548,6 +1564,7 @@ filegroup(
         "abi.cc",
         "abi.h",
         "bfloat16.h",
+        "cus.h",
         "blocking_counter.h",
         "byte_order.h",
         "casts.h",

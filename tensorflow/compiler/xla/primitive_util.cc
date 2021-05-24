@@ -43,6 +43,10 @@ bool IsFloatingPointType(PrimitiveType type) {
   return type == F16 || type == F32 || type == F64 || type == BF16;
 }
 
+bool IsCustomType(PrimitiveType type) {
+  return type == CUS;
+}
+
 bool IsComplexType(PrimitiveType type) { return type == C64 || type == C128; }
 
 bool IsSignedIntegralType(PrimitiveType type) {
@@ -75,6 +79,7 @@ int BitWidth(PrimitiveType type) {
     case U32:
     case S32:
     case F32:
+    case CUS:
       return 32;
 
     case U64:

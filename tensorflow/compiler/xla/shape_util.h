@@ -477,6 +477,9 @@ class ShapeUtil {
   // Returns whether the element type of the shape is floating point.
   static bool ElementIsFloating(const Shape& shape);
 
+  // Returns whether the element type of the shape is custom type.
+  static bool ElementIsCustom(const Shape& shape);
+
   // Returns whether the element type of the shape is complex.
   static bool ElementIsComplex(const Shape& shape);
 

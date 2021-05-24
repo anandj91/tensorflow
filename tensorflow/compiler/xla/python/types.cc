@@ -46,6 +46,7 @@ xla::StatusOr<PrimitiveType> DtypeToPrimitiveType(const py::dtype& np_type) {
           {{'u', 4}, U32},
           {{'u', 8}, U64},
           {{'V', 2}, BF16},  // array protocol code for raw data (void*)
+          {{'V', 4}, CUS),
           {{'f', 2}, F16},
           {{'f', 4}, F32},
           {{'f', 8}, F64},
@@ -83,6 +84,10 @@ xla::StatusOr<py::dtype> PrimitiveTypeToDtype(PrimitiveType type) {
     case BF16: {
       TF_ASSIGN_OR_RETURN(py::object bfloat16, Bfloat16Dtype());
       return py::dtype::from_args(bfloat16);
+    }
+    case CUS: {
+      TF_ASSIGN_OR_RETURN(py::object cus, CusDtype());
+      return py::dtype::from_args(cus);
     }
     case F16:
       return py::dtype("e");  // PEP 3118 code for "float16
@@ -123,6 +128,8 @@ StatusOr<std::string> FormatDescriptorForPrimitiveType(PrimitiveType type) {
       return py::format_descriptor<uint64>::format();
     case BF16:
       return std::string("H");  // PEP 3118 code for "unsigned int16"
+    case CUS:
+      return std::string("V");
     case F16:
       return std::string("e");  // PEP 3118 code for "float16"
     case F32:
@@ -237,6 +244,7 @@ StatusOr<py::object> LiteralToPython(std::shared_ptr<xla::Literal> literal) {
                      reinterpret_cast<PyArray_Descr*>(bfloat16.release().ptr()),
                      static_cast<PyTypeObject*>(nullptr)));
   }
+
   return array;
 }
 

@@ -207,11 +207,21 @@ StatusOr<llvm::Value*> EmitF32ToBF16(llvm::Value* f32_value,
   return b->CreateBitCast(truncated, b->getInt16Ty());
 }
 
+// todo(chenhao) dynamic cus
+llvm::Value* EmitF32ToCus(llvm::Value* f32_value,
+                                     llvm::IRBuilder<>* b) {
+  return b->CreateBitCast(f32_value, b->getInt32Ty());
+}
+
 llvm::Value* EmitBF16ToF32(llvm::Value* bf16_value, llvm::IRBuilder<>* b) {
   auto as_int16 = b->CreateBitCast(bf16_value, b->getInt16Ty());
   auto as_int32 = b->CreateZExt(as_int16, b->getInt32Ty());
   auto shifted = b->CreateShl(as_int32, 16);
   return b->CreateBitCast(shifted, b->getFloatTy());
+}
+
+llvm::Value* EmitCusToF32(llvm::Value* cus_value, llvm::IRBuilder<>* b) {
+  return b->CreateBitCast(cus_value, b->getFloatTy());
 }
 
 llvm::Value* EmitIntegralToFloating(llvm::Value* integer_value,
@@ -238,8 +248,24 @@ StatusOr<llvm::Value*> ElementalIrEmitter::EmitUnaryOp(
     return EmitIntegerUnaryOp(op, operand_value);
   } else if (ShapeUtil::ElementIsComplex(op->operand(0)->shape())) {
     return EmitComplexUnaryOp(op, operand_value);
+  } else if (ShapeUtil::ElementIsCustom(op->operand(0)->shape())) {
+    return EmitCustomUnaryOp(op, operand_value);
   } else {
     return EmitFloatUnaryOp(op, operand_value);
+  }
+}
+
+StatusOr<llvm::Value*> ElementalIrEmitter::EmitCustomUnaryOp(
+    const HloInstruction* op, llvm::Value* operand_value) {
+  switch (op->opcode()) {
+    case HloOpcode::kConvert: {
+      PrimitiveType from_type = op->operand(0)->shape().element_type();
+      PrimitiveType to_type = op->shape().element_type();
+      return EmitCusToF32(operand_value, b_);
+    }
+    default:
+      return Unimplemented("unary integer op '%s'",
+                           HloOpcodeString(op->opcode()));
   }
 }
 
@@ -401,6 +427,14 @@ StatusOr<llvm::Value*> ElementalIrEmitter::EmitFloatUnaryOp(
               operand_value, llvm_ir::PrimitiveTypeToIrType(F32, module_));
         }
         return EmitF32ToBF16(operand_value, b_);
+      }
+      if (to_type == CUS) {
+        // Cast to F32 first
+        if (from_type != F32) {
+          operand_value = b_->CreateFPCast(
+              operand_value, llvm_ir::PrimitiveTypeToIrType(F32, module_));
+        }
+        return EmitF32ToCus(operand_value, b_);
       }
       if (to_type == PRED) {
         return b_->CreateZExt(
@@ -815,8 +849,25 @@ StatusOr<llvm::Value*> ElementalIrEmitter::EmitBinaryOp(
         primitive_util::IsSignedIntegralType(operand_type));
   } else if (primitive_util::IsComplexType(operand_type)) {
     return EmitComplexBinaryOp(op, lhs_value, rhs_value);
+  } else if (primitive_util::IsCustomType(operand_type)) {
+    return EmitCustomBinaryOp(op, lhs_value, rhs_value);
   } else {
     return EmitFloatBinaryOp(op, lhs_value, rhs_value);
+  }
+}
+
+StatusOr<llvm::Value*> ElementalIrEmitter::EmitCustomBinaryOp(
+    const HloInstruction* op, llvm::Value* lhs_value, llvm::Value* rhs_value) {
+  switch (op->opcode()) {
+    case HloOpcode::kAdd: {
+      auto lhs_fp32 = EmitCusToF32(lhs_value, b_);
+      auto rhs_fp32 = EmitCusToF32(rhs_value, b_);
+      auto res_fp32 = FAdd(lhs_fp32, rhs_fp32);
+      return EmitF32ToCus(res_fp32, b_);
+    }
+    default:
+      return Unimplemented("binary floating point op '%s'",
+                           HloOpcodeString(op->opcode()));
   }
 }
 
