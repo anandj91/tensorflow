@@ -218,7 +218,7 @@ REGISTER_OP("ComplexAbs")
 #define UNARY_COMPLEX()                                                  \
   Input("x: T")                                                          \
       .Output("y: T")                                                    \
-      .Attr("T: {bfloat16, half, float, double, complex64, complex128}") \
+      .Attr("T: {bfloat16, cus, half, float, double, complex64, complex128}") \
       .SetShapeFn(shape_inference::UnchangedShape)
 
 #define UNARY_GRADIENT_COMPLEX()                                         \
@@ -382,7 +382,7 @@ REGISTER_OP("AddV2")
     .Input("y: T")
     .Output("z: T")
     .Attr(
-        "T: {bfloat16, half, float, double, uint8, int8, int16, uint32, int32, "
+        "T: {bfloat16, cus, half, float, double, uint8, int8, int16, uint32, int32, "
         "int64, complex64, complex128}")
     .SetShapeFn(shape_inference::BroadcastBinaryOpShapeFn)
     .SetIsAggregate()
@@ -596,7 +596,7 @@ REGISTER_OP("Pow")
     .Output("z: T")
     .Attr(
         "T: {bfloat16, float, half, double, int32, int64, complex64, "
-        "complex128}")
+        "complex128, cus}")
     .SetShapeFn(shape_inference::BroadcastBinaryOpShapeFn);
 
 REGISTER_OP("Igammac")

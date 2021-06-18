@@ -1181,7 +1181,7 @@ REGISTER_OP("SoftsignGrad")
 REGISTER_OP("Softmax")
     .Input("logits: T")
     .Output("softmax: T")
-    .Attr("T: {half, bfloat16, float, double}")
+    .Attr("T: {half, bfloat16, cus, float, double}")
     .SetShapeFn([](InferenceContext* c) {
       return shape_inference::UnchangedShapeWithRankAtLeast(c, 1);
     });

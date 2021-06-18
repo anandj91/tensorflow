@@ -107,6 +107,7 @@ struct FillFunctor<Eigen::ThreadPoolDevice, T> {
   template struct FillFunctor<Eigen::ThreadPoolDevice, T>;
 
 TF_CALL_ALL_TYPES(DEFINE_FILL_CPU);
+TF_CALL_cus(DEFINE_FILL_CPU);
 DEFINE_FILL_CPU(quint8);
 DEFINE_FILL_CPU(quint16);
 DEFINE_FILL_CPU(qint8);
